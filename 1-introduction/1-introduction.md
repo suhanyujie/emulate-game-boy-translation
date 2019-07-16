@@ -1,31 +1,31 @@
-# introduction
-If you really want to know how a particular computer works, there's no better way to learn than by emulating that computer. In this book, we'll be looking at one of the most loved computers of all time, Nintendo's Game Boy. We'll be going through the process from nothing and building the Game Boy up piece by piece. In the process not only will we learn more about the Game Boy itself, but we'll also get a good glimpse into how computers work in general as well as how to build emulators for other computer systems.
+# 介绍
+如果你真的想知道一台特定的计算机是如何工作的，那么没有比模拟那台计算机更好的学习方法了。在本书中，我们将深入了解有史以来最受欢迎的计算机之一，Nintendo（任天堂）的 Game Boy。我们将从无到有，一步一步地构建起 Game Boy。在这个过程中，我们不仅会对 Game Boy 会有更多的了解，还会对计算机的工作原理以及如何为其他类型的计算机系统构建模拟器有很好的了解。
 
-## what-you-need-to-know
-We'll be assuming only basic programming knowledge and basic knowledge of the terminal. If you've programmed in almost any other language before you should be good to go. The particular language we'll be using is the [Rust programming language](https://www.rust-lang.org/), but if you've never used Rust, don't worry; we'll be taking things slow, and I'll do my best to link to relevant learning material as things come up. If you want to get a head start on learning the basics of Rust, the amazing [Rust book](https://doc.rust-lang.org/book/second-edition/index.html) is a great way to learn.
+## 需要知道什么？
+假设我们只具备基本的编程知识和终端的相关知识。如果你之前已经用过任意编程语言，那么你就可以继续学习下去。我们将使用特定的语言[ Rust 编程语言](https://www.rust-lang.org/)，但是如果你从未使用过 Rust，请不要担心；慢慢来，到了具体的时候我会贴出对应的学习资料。如果你想在学习 Rust 方面有一个好的开始，你可以阅读 [Rust book](https://doc.rust-lang.org/book/second-edition/index.html) 来学习。
 
-If you've already build emulators before, and are just looking for a reference specific to the Game Boy, you might find this book to be too detailed. I recommend the [Pan Docs](http://bgb.bircd.org/pandocs.htm) as a great place to quickly learn the nity-grity of the Game Boy. You'll find even more resources in the [resources guide](https://blog.ryanlevick.com/DMG-01/public/book/appendix/resources.html).
+如果你以前已经构建过模拟器，并且在寻找特殊的 Game Boy 资料，你会发现这本书会非常详细。我推荐 [Pan Docs](http://bgb.bircd.org/pandocs.htm) 作为快速了解 Game Boy 的资料。你还可以在[参考指南](https://blog.ryanlevick.com/DMG-01/public/book/appendix/resources.html)中找到更多的资料。
 
-## why-rust
-For many emulation projects performance is a key consideration. This means that emulators are often written in low-level languages that allow the programmer to easily write performant code. While our Game Boy emulator could be written in other languages like JavaScript or Python, it's best to use a language that would be appropriate for more resource intensive emulation (e.g. Sony's PlayStation 2 or Nintendo's Wii) so these skills can be used for future emulation projects. Rust fits the bill perfectly here.
+## 为什么使用 Rust
+对于许多模拟器项目，性能是一个关键因素。这意味着模拟器通常用偏底层语言编写，这样程序员就可以更容易编写高性能代码。虽然我们的 Game Boy 模拟器可以用诸如 JavaScript、Python 等语言来实现，但最好使用一种更适用于资源密集型模拟的语言（如索尼的 PlayStation 2 或者 任天堂的 Wii），以便这些技能可以用于以后的模拟项目。Rust 正好比较合适。
 
-While there are other languages that allow the performance needed for emulation like C and C++, Rust has the added bonus of being much more beginner friendly than C or C++. Unlike these older languages Rust has a solid package manager, testing framework and build tool that will feel familiar to users of more modern languages. Rust's community is also fantastic and generally very helpful.
+虽然也有如 C、C++ 等其他语言能给予模拟器所需的性能，但 Rust 的优势是比 C 或 C++ 对于初学者更加友好。与这些经典的语言不同的是，Rust 有可靠的包管理器，测试框架和构建工具，这会让使用现代语言的用户感到熟悉。Rust 社区也非常棒，对于学习非常有帮助。
 
-Finally, Rust also has a great cross platform story - we'll be focusing on web and on desktop, but in the future, we might also be able to bring our emualtor to mobile platforms and embedded devices!
+最后，Rust 还具有跨平台特性 —— 我们将专注于 web 和桌面，但在未来，我们可能还能够将模拟器带到移动平台和嵌入式设备上！
 
 ## setup
-In order to get started, you'll only need your favorite text editor and Rust related tooling. Follow the instructions [on the Rust website](https://www.rust-lang.org/en-US/install.html) for how to install the rustup tool which gives you access to the Rust compiler, the Rust build tool and package manager called Cargo, as well as some other tools that we'll be using later on in our journey.
+便于更好地开始，你可以选择你喜欢的文本编辑器和 Rust 相关的工具。按照 [Rust 网站](https://www.rust-lang.org/en-US/install.html)的介绍，你会了解如何安装可以接触 Rust 编译器的 rustup 工具链，它还能帮助你了解 Rust 构建工具、包管理工具 Cargo 以及一些其他工具，在后面的教程中会一一使用。
 
-If you've successfully been able to install Rust you can create a new project by running the following command in your terminal:
+如果你已经成功安装了 Rust，你可以在你的终端下用命令来创建一个新项目：
 
 ```shell
 cargo new emulator
 ```
 
-Navigate into your project's directory and have a look around. To run your project run the following:
+进入到你的项目目录并查看。如果要运行这个项目，可以按照以下步骤：
 
 ```shell
 cargo run
 ```
 
-You're all good to go! Let's get emulating!
+你已经开始上路了！让我们模拟吧！
