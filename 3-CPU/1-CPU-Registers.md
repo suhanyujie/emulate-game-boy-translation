@@ -1,16 +1,16 @@
 >* 原文链接 https://blog.ryanlevick.com/DMG-01/public/book/
 >* 译文出处 https://github.com/suhanyujie/emulate-game-boy-translation
 
-# CPU Registers
-In the previous chapter we outlined some of things that the CPU is responsible for. In this chapter we'll be focusing on just one of them: saving small amounts of data into registers.
+# CPU 寄存器
+在前一章中，我们概述了 CPU 的一些职责。在本节中，我们只探讨其中之一：将数据保存到寄存器中。
 
-## Overview
-The Game Boy's CPU is a custom chip made just for the Game Boy. The chip is extremely similar to the [Intel 8080](https://en.wikipedia.org/wiki/Intel_8080) which is itself similar to the [Zilog Z80](https://en.wikipedia.org/wiki/Zilog_Z80). While the Intel 8080 and Zilog Z80 were used in many different computers in the 70s and 80s, the chip inside the Game Boy was just used for the Game Boy. Most of what's true about how the 8080 and Z80 work is also true of the Game Boy's chip. We won't go into details on how exactly they differ, but it's important to be aware that while they're similar to the Game Boy's chip, they're not exactly the same.
+## 概述
+Game Boy 的 CPU 是专门为 Game Boy 定制的。该芯片非常类似于 [Intel 8080](https://en.wikipedia.org/wiki/Intel_8080)，而 Intel 8080 也非常类似于 [Zilog Z80](https://en.wikipedia.org/wiki/Zilog_Z80)。在 70 年代和 80 年代中，Intel 8080 和 Zilog Z80 常被用于许多不同的计算机设备，而 Game Boy 内部的芯片只是用于 Game Boy。关于 8080 和 Z80 的工作原理大部分也适用于 Game Boy 的芯片。在这里不会详细讨论它们之间的区别，但需要知道，虽然它们与 Game Boy 的芯片很类似，但也很不同。
 
-## Registers
-The CPU is composed of 8 different "registers". Registers are responsible for holding on to little pieces of data that the CPU can manipulate when it executes various instructions. The Game Boy's CPU is an 8-Bit CPU, meaning that each of its registers can hold 8 bits (a.k.a 1 byte) of data. The CPU has 8 different registers labled as "a", "b", "c", "d", "e", "f", "h", "l".
+## 寄存器
+该 CPU 中包含了 8 个不同的“寄存器”。寄存器负责保存 CPU 在执行各种指令时可以操作的小块数据。Game Boy 的 CPU 是一个 8 位的 CPU，这意味着它的每个寄存器可以容纳 8 位（即 1 字节）。这里讲 8 个不同的寄存器标识为“a”，“b”，“c”，“d”，“e”，“f”，“g”，“h”，“l”。
 
-Let's get started building our CPU by specing out the registers in code:
+我们通过指定寄存器的代码开始构建 CPU：
 
 ```rust
 struct Registers {
@@ -25,9 +25,9 @@ struct Registers {
 }
 ```
 
-We use the type `u8` for our registers. `u8` are 8-bit unsigned integers. For a refresher on how numbers are stored in computers, checkout the [guide on numbers](https://blog.ryanlevick.com/DMG-01/public/book/cpu/appendix/numbers.html).
+我们设定寄存器的类型是 `u8`。它代表的是 8 位无符号整数。如果要了解数字如何存储在计算机中，请阅读[数字指南](https://blog.ryanlevick.com/DMG-01/public/book/cpu/appendix/numbers.html)。
 
-While the CPU only has 8 bit registers, there are instructions that allow the game to read and write 16 bits (i.e. 2 bytes) at the same time (denoted as `u16` in Rust - a 16 bit unsigned integer). Therefore, we'll need the ability to read an write these "virtual" 16 bit registers. These registers are refered to as "af" ("a" and "f" combined), "bc" ("b" and "c" combined), "de" ("d" and "e" combinded), and finally "hl" ("h" and "l" combined). Let's implement "bc":
+虽然 CPU 只有 8 位的寄存器，但是有一些指令需要游戏同时（Rust 中表示为 `u16`—— 一个 16 位无符号整数）读写 16 位数据（也就是 2 字节）。因此，我们需要能够读写“虚拟”的 16 位寄存器。这些寄存器被引用为“af”（“a”和“f”组合）、“bc”（“b”和“c”组合）、“de”（“d”和“e”组合），还有“hl”（“h”和“l”的组合）。我们来实现一下“bc”吧：
 
 ```rust
 struct Registers { a: u8, b: u8, c: u8, d: u8, e: u8, f: u8, h: u8, l: u8, }
@@ -44,18 +44,18 @@ impl Registers {
 }
 ```
 
-Here we see our first instance of "bit manipulation" through the use of four bitwise operators: ">>", "<<", "&", and "|". If you're unfamiliar with or feel a bit rusty using these types of operators, check out the [guide on bit manipulation](https://blog.ryanlevick.com/DMG-01/public/book/cpu/appendix/bit_manipulation.html).
+这里我们看到第一个“位操作”实例，它可以使用四个位操作符：“>>”，“<<”，“&”以及“|”。如果你不熟悉这类操作符，可以查看[位操作符指南](https://blog.ryanlevick.com/DMG-01/public/book/cpu/appendix/bit_manipulation.html)。
 
-For reading the "bc" register we first treat the "b" register as a `u16` (this effectively just adds a byte of all 0s to the most significant position of the number). We then shift the "b" register 8 positions so that it's occupying the most significant byte position. Finally, we bitwise OR the "c" register. The result is a two byte number with the contents of "b" in the most significant byte position and the contents of "c" in the least significant byte position.
+为了读取“bc”寄存器，我们需要先将“b”寄存器视为 `u16`（实际上只是将一字节的 0 值添加到高数值位）。然后我们移动“b”寄存器的 8 个位置，让它占据高字节的位置。最后，我们将其与“c”寄存器中的值进行按位或操作。结果是一个双字节数，其中“b”的内容位于高字节位，“c”的内容位于低字节位。
 
-## Flags Register
-We're almost done with our registers, but there's one thing we way we can improve our registers for use later. The "f" register is a special register called the "flags" register. The lower four bits of the register are always 0s and the CPU automatically writes to the upper four bits when certain things happen. In other words, the CPU "flags" certain states. We won't go into the specific meanings of the flags just yet, but for now just know that they have the following names and positions:
-    * Bit 7: "zero"
-    * Bit 6: "subtraction"
-    * Bit 5: "half carry"
-    * Bit 4: "carry"
+## 标志寄存器
+寄存器讲的差不多了，但是为了便于后面使用，我们可以改进一下寄存器。“f”寄存器是一种特殊的寄存器，称为“标志”寄存器。这个寄存器的低四位总是 0 值，在一些情况下，CPU 自动写入其中高四位。换句话说，CPU 进行状态“标识”。我们现在不讨论这个细节，只需知道其中的位置和对应的作用：
+    * Bit 7: “零值”（zero）
+    * Bit 6: “减法，差集”（subtraction）
+    * Bit 5: “半进位”（half carry）
+    * Bit 4: “进位”（carry）
 
-Here's a diagram of the flags register:
+下面是标志寄存器的示意图：
 
 ```other
    ┌-> Carry
@@ -67,9 +67,9 @@ Here's a diagram of the flags register:
   └-> Half Carry
 ```
 
-So while we could continue modeling our flags register as a simple 8-bit number (after all, that's all it is in reality), it might be less error prone to explicitly model the fact that the upper 4 bits (a.k.a the upper "nibble") has specific meaning and the lower 4 bits (a.k.a the lower "nibble") must always be zeros.
+因此，虽然我们可以仍然将“标志寄存器”建模为简单的 8 位数值（毕竟，真实情况也是如此），但对高 4 位（就是半个字节）设定特定的含义并让低 4 位（就是半个字节）保持为 0 值的建模更不容易出错。
 
-For this reason we'll make a struct called the `FlagsRegister`:
+因此，我们将创建一个 `FlagsRegister` 结构类型： 
 
 ```rust
 struct FlagsRegister {
@@ -80,7 +80,7 @@ struct FlagsRegister {
 }
 ```
 
-Since we might need to look at this register as an 8-bit number, we can implement some traits from the standard library that make this easy:
+由于我们需要把这个寄存器看作为一个 8 位数值，所以我们可以利用标准库中的一些 trait 来简化这个过程：
 
 ```rust
 struct FlagsRegister {
@@ -120,8 +120,8 @@ impl std::convert::From<u8> for FlagsRegister {
 }
 ```
 
-The `std::convert::From` trait allows us to easily convert our FlagsRegister from a `u8` and back.
+`std::convert::From` trait 可以让我们轻松地将 FlagsRegister 从 `u8` 进行来回转换
 
-Now that we have our special `FlagsRegister`, we can replace the `u8` in our `Registers` struct's `f` field.
+既然我们有了特殊的 `FlagsRegister`，可以将 `Registers` 结构体中的“f”字段的 `u8` 进行替换。
 
-And that's it! We have all the functionality we need for our registers. Next we'll be looking at different instructions for manipulating the registers.
+就是这样！我们拥有寄存器所需的所有功能。接下来，我们研究寄存器的不同指令。
