@@ -1,33 +1,33 @@
-# Architecture Overview
-Before we can begin we need to have a basic understanding of what is needed to build a Game Boy emulator. This starts by having a basic understanding of the Game Boy computer architecture. If you're already familiar with the very basics of CPUs, computer memory and I/O devices, you can skip to the next page.
+# 架构概述
+在开始之前，我们需要对构建 Game boy 模拟器的相关内容有一个基本的了解。首先，要了解的是 Game boy 芯片架构。如果你已经对它的 CPU、内存和 I/O 设备了解了，可以跳到下一节。
 
 ## At a High Level
-The Gameboy can be thought to contain the following pieces:
+Game boy 主要包含以下几个部分：
 
-#### CPU (Central Processing Unit)
-The CPU is the "brains" of a computer. The CPU is responsible for the following:
-    * Executing instructions defined by the game the Game Boy is running
-    * Reading and writting to memory
-    * Reacting to "events" (known as interrupts) that come from the I/O (input/output) hardware such as the screen and the gamepad controls
-    * Keeping track of very small pieces of data in "registers" that it manipulates when it runs instructions
+#### CPU（中央处理器）
+CPU 是计算机的“大脑”。它主要有以下职责：
+    * 执行 Game boy 运行的游戏定义的指令
+    * 读写内存
+    * 响应来自 I/O（输入/输出） 硬件（如屏幕和控制摇杆）的“事件”(也称为中断)
+    * 在 CPU 执行指令时，追踪寄存器中的数据
 
-#### RAM (Random Access Memory)
-This is the piece of hardware that allows the Game Boy to remember data while it is running. Without the RAM, the Gameboy's CPU could still execute instructions and keep track of small pieces of data in its registers, but if the data no longer fits in its registers, the CPU would have to throw it away.
+#### RAM（随机访问存储）
+这是一种硬件，用于在 Game boy 运行时存储数据。若没有 RAM，Game boy 的 CPU 仍然可以执行指令并跟踪寄存器中的数据，但如果寄存器不再需要这些数据时，CPU 就会将其丢弃。
 
-### ROM (Read Only Memory)
-This is memory that has been "hardcoded" into the machine (hence it being read only). This memory is used to tell the machine how to set itself up (a.k.a bootstrap) to be able to begin accepting instructions as well as to play the [iconic splash screen](https://www.youtube.com/watch?v=ClJWTR_lCL4) on boot.
+### ROM（只读存储）
+这是已经“硬编码”到机器中的存储（因此是只读的）。这种存储器用来告诉机器如何设置启动它自己，然后开始接收指令，并在启动后播放[标志性的启动画面](https://www.youtube.com/watch?v=ClJWTR_lCL4)
 
-Game cartridges are also known as ROMs as they are mostly read only memory as well.
+游戏卡也被属于 ROM，因为它们基本上就是只读的存储器。
 
-### I/O (Input/Output)
-The Gameboy has several pieces of I/O hardware:
-    * The screen,
-    * Hardware dedicated to playing sounds,
-    * A gamepad that the player uses to interact with the game through pushing various buttons.
+### I/O（输入/输出设备）
+Game boy 有一些 I/O 设备：
+    * 屏幕，
+    * 专门用于播放声音的硬件，
+    * 游戏手柄，玩家通过按下不同的按钮与游戏交互。
 
-We'll discuss how the CPU can interface with this hardware much later in the book.
+我们将在本书后面讨论 CPU 如何跟这些硬件接口交互。
 
->* **Learn More**
->* If you're interested in learning more about how computers work all the way down to the electrical level, I suggest watching Ben Eater's series on [making an 8-bit Breadboard Computer](https://www.youtube.com/user/eaterbc). Ben does an absolutely wonderful job of explaining how CPUs, RAM, ROM and even I/O devices are built from the ground up!
+>* **学习更多**
+>* 如果你有兴趣了解更多关于计算机是如何在电路层间工作的知识，我建议你看一下 Ben Eater 的 [making an 8-bit Breadboard Computer](https://www.youtube.com/user/eaterbc) 系列文章。Ben 非常棒地说明了如何从底层构建 CPU、RAM、ROM 以及 I/O 设备等！
 
-Now that we have a small overview of the pieces we'll be talking about, let's take a closer look at the CPU!
+现在我们对整体已经有了部分了解，下面我们仔细看看 CPU！
