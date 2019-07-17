@@ -1,6 +1,6 @@
 # CPU
-The Game Boy's CPU is a custom chip called the Sharp LR35902. The chip is very similar to the much more popular [Intel 8080](https://en.wikipedia.org/wiki/Intel_8080) and the [Zilog Z80](https://en.wikipedia.org/wiki/Zilog_Z80). The 8080 was used by lots of different computers in the 70s and 80s including the very first comercially successful personal computer the [Altair 8800](https://en.wikipedia.org/wiki/Altair_8800). The Z80 was also a very popular chip being used in many home electronic devices including in many Sega home consoles such as the Master System and the Sega Genesis/Mega Drive.
+Game Boy 的 CPU 是一种定制的芯片，名为夏普 LR35902。这个芯片跟更加流行的 [Intel 8080](https://en.wikipedia.org/wiki/Intel_8080) 和 [Zilog Z80](https://en.wikipedia.org/wiki/Zilog_Z80) 是相似的。8080 系列在 70 年代和 80 年代被用在很多的计算机中，包括第一个个人计算机 [Altair 8800](https://en.wikipedia.org/wiki/Altair_8800)。Z80 也是一个非常受欢迎的芯片，用在许多家庭电子设备中，如 Sega（世嘉） 家用控制台、主机系统和 Sega Genesis/Mega 驱动器。
 
-We won't go into the specifics of what makes the LR35902 different from the Intel 8080 or Z80, but in general it's good to know that a large portion of what we'll learn about this custom chip will be applicable to other popular chips from yesteryear.
+我们不会很详细的介绍 LR35902 和 Intel 8080、Z80 的不同之处，但大体上，我们学到的大部分这个芯片知识会适用于从去年开始流行的其它芯片
 
-In the next few sections we'll be looking at the different CPU instructions that the LR35902 can execute as long with how it reads instructions from memory, decodes them and updates its internal state as well as the contents of memory and different I/O devices.
+在接下来的几节中，我们要研究 LR35902 可以执行不同的 CPU 指令，和它如何从内存中读取指令、解析指令并更新内部状态、内存、各种不同的 I/O 设备。
