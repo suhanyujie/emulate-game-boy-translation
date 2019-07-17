@@ -3,10 +3,10 @@
 * 如果对你有帮助，请给颗 ☆
 
 ## 目录
-- [x] 1 介绍
-- [x] 2 架构概述
-- [ ] 3 CPU
-    - [ ] 3.1 CPU 寄存器
+- [x] 1 [介绍](./1-introduction/1-introduction.md)
+- [x] 2 [架构概述](./Architechture-overview/1-Architechture-overview.md)
+- [x] 3 [CPU](./3-CPU)
+    - [x] 3.1 [CPU 寄存器](./3-CPU/1-CPU-Registers.md)
     - [ ] 3.2 寄存器数据指令
     - [ ] 3.3 指令执行器和控制流
     - [ ] 3.4 内存读写指令
