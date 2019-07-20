@@ -2,16 +2,16 @@
 >* 译文出处 https://github.com/suhanyujie/emulate-game-boy-translation
 >* Instructions on Register Data 译文
 
-# Instructions on Register Data
-The first instructions we'll be examining are instructions that just operate on and manipulate register data.
+# 寄存器数据的指令
+我们首先研究的指令是操作符寄存器数据的指令
 
 ## ADD
-We'll start by looking closely at how the `ADD` instructions work. This is a simple instruction that adds specific register's contents to the A register's contents. Once we know how this instruction works, it won't be much work to extend the CPU to support all other instructions that just operate on register data.
+以研究 `ADD` 指令如何工作作为开始。它是一个简单的指令，将指定寄存器的内容添加到另一个寄存器的内容中。一旦我们知道了这条指令的原理，扩展其它 CPU 指令以支持寄存器数据的其它操作就不需要费太多力气。
 
-### Definition
-First we need to define the instruction. We'll get into how the game code actually encodes instructions and where the instructions come from later on. For now we're just focusing on the instruction itself and how it affects the CPU registers.
+### 定义
+首先，我们先定义指令。稍后会了解对应的代码是如何编码指令以及指令是存在哪儿。现在我们关注一下指令本身，以及它如何影响 CPU 寄存器。
 
-The first thing to do is to define an enum called `Instruction`. This enum will be the central place where all of our instructions will be defined. Our `ADD` instruction needs to include information on which register they're targeting so we'll make sure to include it by associating the instruction with `ArithmeticTarget` enum that specifies the target register. `ADD` can target all of the 8 bit registers except f.
+首先定义一个名为 `Instruction` 的枚举类型。后面我们定义所有的指令都将围绕这个枚举进行。`ADD` 指令中需要包含目标寄存器的信息，因此我们要把 `ArithmeticTarget` 枚举类型的特定值和目标寄存器联系起来。`ADD` 可以将除 f 之外的所有 8 位寄存器作为目标寄存器。
 
 ```rust
 enum Instruction {
@@ -23,8 +23,8 @@ enum ArithmeticTarget {
 }
 ```
 
-### Executing the Instruction
-Ok, now that we have ths instruction, we'll need a way to execute it. Let's create a method on CPU that takes an instruction and executes it. This method will take a mutable reference to the CPU since instructions always mutate the CPU's state. The method will also take the instruction it will execute. We'll pattern match on the instruction and the target register, and then we'll do the appropriate action according to the instruction and the register:
+### 执行指令
+好了，有了这个指令，我们就要想办法去执行它。我们在 CPU 上创建一个方法，它接收一条指令并执行它。这个方法接受的是 CPU 的可变引用，因为指令总是会改变 CPU 的状态。该方法还可以接收它后续要执行的指令。我们会对指令和目标寄存器进行模式匹配，然后根据指令和寄存器进行相应的操作：
 
 ```rust
 struct CPU {}
@@ -47,13 +47,13 @@ impl CPU {
 }
 ```
 
-We now have the boiler plate for figuring out which instruction and which target register. Let's see now what we have to do to the actual CPU. The steps for `ADD` for 8 bit target registers are the following:
-    * Read the current value from the target register
-    * Add the value to the value in the A register making sure to handle overflow properly
-    * Update the flags register
-    * Write the updated value to the A register
+我们有了最基础的版本，可以计算出对应的指令和对应的目标寄存器。现在我们来看看实际上对 CPU 做了什么。给 8 位寄存器的 `ADD` 指令添加目标寄存器的步骤如下：
+    * 从目标寄存器中读取当前值
+    * 将这个值加到 A 寄存器中的值上，并正确处理溢出等问题。
+    * 更新标志寄存器的值
+    * 将更新的值写入到 A 寄存器中
 
-Let's implement it with C as the target register:
+我们用 C 表示目标寄存器来实现整个步骤：
 
 ```rust
 struct Registers { a:u8, c: u8 }
@@ -85,26 +85,26 @@ impl CPU {
 }
 ```
 
-Notice that we use the `overflowing_add` method on our 8 bit value instead of `+`. This is because `+` panics in development when the result of the addition overflows. Rust forces us to be explicit about the behaivor we want, we chose `overflowing_add` because it properly overflows the value, and it informs us if the addition actually resulted in an overflow or not. This will be important information for when we update the flags register.
+注意，我们在 8 位的值上使用了 `overflowing_add` 方法，而不是 `+`。这是因为在开发中，当加法运算结果溢出时，使用 `+` 会引发 panic。Rust 要求我们明确自己的行为，使用 `overflowing_add` 可以正确处理溢出问题，并且它告诉我们实际操作是否会溢出。这将是更新标志寄存器时的重要信息。
 
 ### Setting Flags
-There are four flags defined on the flags register:
-    * Zero: set to true if the result of the operation is equal to 0.
-    * Subtract: set to true if the operation was a subtraction.
-    * Carry: set to true if the operation resulted in an overflow.
-    * Half Carry: set to true if there is an overflow from the lower nibble (a.k.a the lower four bits) to the upper nibble (a.k.a the upper four bits). Let's take a look at some examples of what this means. In the following diagram, we have the byte 143 in binary (0b1000_1111). We then add 0b1 to the number. Notice how the 1 from the lower nibble is carried to the upper nibble. You should already be familiar with carries from elemetry arithmetic. Whenever there's not enough room for a number in a particular digit's place, we carry over to the next digits place.
+在标志寄存器中定义了四个标志位：
+    * Zero: 如果运算结果等于 0，则设置为 true。
+    * Subtract: 如果是减法运算，这个标志位设置为 true
+    * Carry: 如果运算结果溢出，则将这个标志位设为 true。
+    * 半进位：如果出现较低的半字节（即低四位）向较高的半字节（即高四位）溢出，则设置为 true。举个例子看看这种场景意味什么，在下面的图中，已知二进制字节 143（0b1000_1111），然后把 0b1 加到这个数上。着重看一下，1 是如何从低位进到高位的。你应该已经熟悉了数学计算中的进位。当一个数在一个特定的数位上没有足够的空间表示时，我们就把它移到下个数位上表示。
 
     ```other
-          lower nibble            lower nibble
+          低半字节            低半字节
          ┌--┐                    ┌--┐
     1000 1111  +   1   ==   1001 0000
     └--┘                    └--┘
-upper nibble            upper nibble
+高半字节            高半字节
     ```
 
-    If this happens when adding our values, we set the half_carry flag to true. We can test for this by masking out the upper nibble of both the A register and the value we're adding and testing if this value is greater than 0xF.
+    如果在增加数值时，我们将 half_carry 设为 true。我们可以通过划出 A 寄存器和“被加数”值的高半字节进行测试，并测试结果值是否比 0xF 大。
 
-So let's take a look at the code:
+看一下代码：
 
 ```rust
 struct FlagsRegister { zero: bool, subtract: bool, half_carry: bool, carry: bool }
@@ -119,6 +119,8 @@ impl CPU {
     // Half Carry is set if adding the lower nibbles of the value and register A
     // together result in a value bigger than 0xF. If the result is larger than 0xF
     // than the addition caused a carry from the lower nibble to the upper nibble.
+    // 如果把值的低半字节和 A 寄存器相加，并将结果结合在一起，结果大于 0xF，则设置半进位。
+    // 如果结果大于 0xF，则会导致从低四位到高四位的进位
     self.registers.f.half_carry = (self.registers.a & 0xF) + (value & 0xF) > 0xF;
     new_value
   }
@@ -126,41 +128,41 @@ impl CPU {
 ```
 
 ## How Do We Know?
-Yout might be wondering, "how do we know what to do given a certain the instruction". The short answer is that this is just how the chip was specified and manufactured to worked. We know this because people have either read the original user's manual for the Game Boy's CPU chip (known as a "data sheet"),or they've written test programs for the chip that call specific instructions and see what happens. Luckily you don't need to do this. You can find descriptions of all the instructions [in the instruction guide](https://blog.ryanlevick.com/DMG-01/public/book/appendix/instruction_guide/index.html).
+你可能会想，“我们怎么知道一个具体的指令它是做什么操作的”。简而言之，这就是芯片的设计和制造过程产生的结果。我们之所以知道这一点，是因为人们阅读了 Game Boy 的 CPU 芯片的用户手册（也就是“资料手册”），又或者给芯片编写测试程序，调用特定的指令，然后观察会发生什么。幸运的是，我们无需这么做。我们可以在[说明书](https://blog.ryanlevick.com/DMG-01/public/book/appendix/instruction_guide/index.html)中找到所有具体的说明。
 
->* Side Note
->* Most CPU instructions that deal with register data manipulate that data through various bitwise operations. If the likes of logical shifts and bitwise ands aren't super clear to you, check out the [guide on bit manipulation](https://blog.ryanlevick.com/DMG-01/public/book/cpu/appendix/bit_manipulation.html).
+>* 额外提示
+>* 大多数处理寄存器数据的 CPU 指令都可以通过各种位操作来操作数据。如果你不太清楚逻辑位运算之类的知识，请参阅[位操作指南](https://blog.ryanlevick.com/DMG-01/public/book/cpu/appendix/bit_manipulation.html)
 
-What are the other types of instructions that act on register data?
-    * **ADDHL** (add to HL) - just like ADD except that the target is added to the HL register
-    * **ADC** (add with carry) - just like ADD except that the value of the carry flag is also added to the number
-    * **SUB** (subtract) - subtract the value stored in a specific register with the value in the A register
-    * **SBC** (subtract with carry) - just like ADD except that the value of the carry flag is also subtracted from the number
-    * **AND** (logical and) - do a bitwise and on the value in a specific register and the value in the A register
-    * **OR** (logical or) - do a bitwise or on the value in a specific register and the value in the A register
-    * **XOR** (logical xor) - do a bitwise xor on the value in a specific register and the value in the A register
-    * **CP** (compare) - just like SUB except the result of the subtraction is not stored back into A
-    * **INC** (increment) - increment the value in a specific register by 1
-    * **DEC** (decrement) - decrement the value in a specific register by 1
-    * **CCF** (complement carry flag) - toggle the value of the carry flag
-    * **SCF** (set carry flag) - set the carry flag to true
-    * **RRA** (rotate right A register) - bit rotate A register right through the carry flag
-    * **RLA** (rotate left A register) - bit rotate A register left through the carry flag
-    * **RRCA** (rotate right A register) - bit rotate A register right (not through the carry flag)
-    * **RRLA** (rotate left A register) - bit rotate A register left (not through the carry flag)
-    * **CPL** (complement) - toggle every bit of the A register
-    * **BIT** (bit test) - test to see if a specific bit of a specific register is set
-    * **RESET** (bit reset) - set a specific bit of a specific register to 0
-    * **SET** (bit set) - set a specific bit of a specific register to 1
-    * **SRL** (shift right logical) - bit shift a specific register right by 1
-    * **RR** (rotate right) - bit rotate a specific register right by 1 through the carry flag
-    * **RL** (rotate left) - bit rotate a specific register left by 1 through the carry flag
-    * **RRC** (rorate right) - bit rotate a specific register right by 1 (not through the carry flag)
-    * **RLC** (rorate left) - bit rotate a specific register left by 1 (not through the carry flag)
-    * **SRA** (shift right arithmetic) - arithmetic shift a specific register right by 1
-    * **SLA** (shift left arithmetic) - arithmetic shift a specific register left by 1
-    * **SWAP** (swap nibbles) - switch upper and lower nibble of a specific register
+还有其他哪些作用于寄存器数据的指令呢？
+    * **ADDHL** (add to HL) - 类似于 ADD 指令一样，不同的是 ADDHL 的结果是加到 HL 寄存器
+    * **ADC** (add with carry) - 和 ADD 一样，知识进位标志的值也被加到数值中
+    * **SUB** (subtract) - 用 A 寄存器中的值减去存储在特定寄存器中的值
+    * **SBC** (subtract with carry) - 和 ADD 类似，知识进位值要从数值中减去
+    * **AND** (logical and) - 对指定寄存器中的值和 A 寄存器中的值执行按位与操作
+    * **OR** (logical or) - 将指定寄存器的值和 A 寄存器的值进行按位或
+    * **XOR** (logical xor) - 将指定寄存器的值和 A 寄存器的值进行按位异或
+    * **CP** (compare) - 和 SUB 类似，只是减运算的结果不存回 A 寄存器
+    * **INC** (increment) - 将指定寄存器的值加一
+    * **DEC** (decrement) - 将指定寄存器中的值减一
+    * **CCF** (complement carry flag) - 切换进位标志的值
+    * **SCF** (set carry flag) - 将进位标志设为 true
+    * **RRA** (rotate right A register) - 通过进位标志位将 A 寄存器向右位旋转
+    * **RLA** (rotate left A register) - 通过进位标志位将 A 寄存器向左位旋转
+    * **RRCA** (rotate right A register) - 向右位旋转 A 寄存器的值 (不是通过进位标志位)
+    * **RRLA** (rotate left A register) - 向左右位旋转 A 寄存器的值 (不是通过进位标志位)
+    * **CPL** (complement) - 切换 A 寄存器的所有位
+    * **BIT** (bit test) - 检查指定寄存器是否设置了特定的位
+    * **RESET** (bit reset) - 将指定寄存器的指定位设为 0
+    * **SET** (bit set) - 将指定寄存器的指定位设为 1
+    * **SRL** (shift right logical) - 将指定寄存器的值右移 1 位
+    * **RR** (rotate right) - 通过进位标志位将指定寄存器向右旋转 1 位
+    * **RL** (rotate left) - 通过进位标志位将指定寄存器向左旋转 1 位
+    * **RRC** (rorate right) - 将指定寄存器的值向右位旋转 1 位 (不是通过进位标志位)
+    * **RLC** (rorate left) - 将指定寄存器的值向左位旋转 1 位 (不是通过进位标志位)
+    * **SRA** (shift right arithmetic) - 将指定寄存器的值“算术逻辑运算右移” 1 位
+    * **SLA** (shift left arithmetic) - 将指定寄存器的值“算术逻辑运算左移” 1 位
+    * **SWAP** (swap nibbles) - 切换指定寄存器的高低半字节
 
-Reading through the guide on instructions, should give you enough information to implement all the instructions yourself.
+通读指南上的说明，差不多会给你足够的信息来让你自己实现所有的指令。
 
-Next, we'll be looking at how the CPU keeps track of which instructions to execute as well as different types of instructions that can change where we are in a particular program.
+接下来，我们将研究CPU 如何跟踪执行这些指令，以及更改在特定程序位置的不同类型的指令。
