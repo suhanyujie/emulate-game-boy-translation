@@ -1,24 +1,28 @@
 # Program Counter
+* 程序计数器
 
 >* 原文链接 https://blog.ryanlevick.com/DMG-01/public/book/
 >* 译文出处 https://github.com/suhanyujie/emulate-game-boy-translation
->* Instructions on Register Data - Instruction Execution and Control Flow 译文
 
-So far we've seen instructions that can operate on register data. But how does the CPU which instruction to execute? To understand this, we'll first need to understand where our instructions are stored.
+# 寄存器数据指令
+>Instructions on Register Data - Instruction Execution and Control Flow 译文
+
+目前为止，我们知道了可以操作寄存器数据的指令了。但这些指令在 CPU 上如何执行呢？要理解这个，我们首先需要明白我们的指令存储在哪儿？
 
 ## Game ROM
-So far we know that the Game Boy has a CPU that executes instructions and it has memory. Memory can be thought of as one very large array of 8-bit numbers.
+目前我们知道了 Game Boy 拥有一个执行指令的 CPU 和内存。内存可以看做是一个非常大的 8 比特位数值的数组。
 
-At the beginning of this very long array are 255 bytes (from index 0x0000 to index 0x00FF) that are hard coded into the Game Boy's circuitry. These 255 bytes are instructions that tell the Game Boy how to "bootstrap" itself (i.e. get itself ready to execute a game) as well as display the [iconic splash screen](https://www.youtube.com/watch?v=ClJWTR_lCL4). Later in the book we'll be looking at specifically what these instructions do, but for now just imagine them as a collection of instructions many of which we learned in the previous chapter and the rest of which we'll learn in this chapter and the next few to come.
+这个大数组的开头是 255 字节（从 0x0000 到 0x00FF），这些字节被硬编码到 Game Boy 的物理电路中。这 255 字节的内容就是告诉 Game Boy 如何启动的指令（例如，它已经准备好启动游戏）并且显示 [标志性的屏显](https://www.youtube.com/watch?v=ClJWTR_lCL4)。后面本书会详细说明这些指令所做的东西，但现在把它们看做一个指令集合，其中很多是我们在前一章学过的，其余的，我们将在接下来的章节中学习到。
 
 When the user of a Game Boy inserts a game cartridge, the contents of that cartridge become available to the CPU right after these 255 bytes. We'll talk later about where other things such as the contents of the screen and graphics data live in memory later in the book. For now we just need to know that the contents of memory starting at index 0x100 until index 0x3FFF include the contents of the cartridge.
+当 Game Boy 用户插入了一个“游戏卡”时，CPU 执行完这 255 字节的指令后，该游戏卡的内容对 CPU 来讲也是可执行的。我们稍后将在书中讨论如屏显和图形数据等内容在内存中存储的位置。现在，我们只需要知道游戏卡中从 0x100 开始到 0x3FFF 的内存包含的内容。
 
-So our memory is simply an long array of 8-bit numbers (0xFFFF or 65,536 of them to be exact). Each of these numbers can be decoded as an instruction that our CPU knows how to run. But how does the CPU know which of these to execute?
+所以我们的内存是简单的 8 位整形长数组（确切的说是其中的 0xFFFF 或 65,536）。这些数字中的每个都能被解码为 CPU 能“懂”的指令。但是 CPU 如何判断执行哪一个呢？
 
-## The Program Counter
-Along with the register data, our CPU also holds on to a 16-bit number called the progam counter (often abbreviated as PC) which tells us which instruction the Game Boy is currently executing. This 16-bit number is capable of addressing of the of 0xFFFF numbers that live in memory. In fact, when we talk about the memory array we don't usually use the term "index", but instead the term "address".
+## 程序计数器
+除了寄存器数据，我们的 CPU 还保存了一个 16 位的数字，叫做“程序计数器”（通常缩写为 PC），它告诉 Game Boy 当前正在执行哪条指令。这个 16 位数字能够寻址到内存中的 0xFFFF 数据。事实上，我们谈到内存数组时，我们通常不使用“索引”这个词，而是使用“地址”这个词。
 
-Let's add a program counter to our CPU as well as memory that we can address from the CPU.
+我们添加一个程序计数器到 CPU 以及可以用于在 CPU 中寻址的内存。
 
 ```rust
 struct CPU {
@@ -38,15 +42,15 @@ impl MemoryBus {
 }
 ```
 
-We now have a program counter that can tell us at which address in memory the currently executing instruction is. We won't talk much more about the contents of memory or where certain things in memory live until later in the book. For now, you should just picture memory as a large array that we can read from.
+现在我们有了程序计数器，它可以告诉我们当前执行的指令在内存中的哪个地址。到本书的后面，我们不会再过多地讨论内存的内容或者内存中存储的数据。现在你应该将内存描绘成一个大数组，并且我们可以从中读取数据。
 
-Now we'll need to actually add the method to the CPU that uses the program counter to read the instruction from memory and execute it.
+现在我们需要给 CPU 添加方法，也就是 CPU 使用计数器从内存中读取指令并执行。
 
-The full set of steps is as follows:
-    - Use the program counter to read the instruction byte from memory.
-    - Translate the byte to one of the instances of the `Instruction` enum
-    - If we can successfully translate the instruction call our `execute` method else panic which now returns the next program counter
-    - Set this next program counter on our CPU
+主要设置步骤如下:
+    - 使用程序计数器在内存中读取指令字节
+    - 将字节转换为 `Instruction` 枚举中的某个实例。
+    - 如果转换成功，指令调用 `execute` 方法，否则就 panic，并返回下一个程序计数器
+    - 把下一个程序计数器设定给 CPU 
 
 ```rust
 impl CPU {
@@ -64,7 +68,7 @@ impl CPU {
 }
 ```
 
-So there's two things we'll need to add for the above to work. We'll need to change our execute method to return the next program counter, and we'll need to add a function that takes a byte and returns an `Instruction`. Let's start with latter. Decoding our instruction byte as an `Instruction` is very straight forward. Instructions are uniquely identified by the byte number. For instance, a logical `OR` with the `A` register as its target is identified by the byte 0x87. Want to do an `OR` with the `H` register as the target? That's the number 0xB4. The `SCF` (or Set Carry Flag) instruction is identified by the byte 0x37. We can use our [instruction guide](https://blog.ryanlevick.com/DMG-01/public/book/appendix/instruction_guide/index.html) to find out which byte value corresponds to which `Instruction`.
+因此，我们需要添加方法来完成上面提到的工作。我们需要更改执行方法来返回下一个程序计数器，我们还需要添加一个函数，该函数接收一个字节的参数并返回一个 `Instruction`。我们从后者开始。将指令字节解码为一个 `Instruction` 不难。指令是通过字节数值表示的唯一标识。例如，`A` 寄存器的逻辑或（`OR`）由字节 0x87 作为标识。要实现 `H` 寄存器的逻辑或（`OR`）该怎么做呢？结果是 0xB4。`SCF`（或 Set Carry Flag）指令由字节 0x37 作为标识。我们可以使用 [instruction guide](https://blog.ryanlevick.com/DMG-01/public/book/appendix/instruction_guide/index.html) 来找出字节值对应哪个 `Instruction`。
 
 ```rust
 impl Instruction {
@@ -72,7 +76,7 @@ impl Instruction {
     match byte {
       0x02 => Some(Instruction::INC(IncDecTarget::BC)),
       0x13 => Some(Instruction::INC(IncDecTarget::DE)),
-      _ => /* TODO: Add mapping for rest of instructions */ None
+      _ => /* TODO: 给其余的指令增加映射 */ None
     }
   }
 }
