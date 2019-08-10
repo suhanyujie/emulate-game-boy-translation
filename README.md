@@ -4,7 +4,7 @@
 
 ## 目录
 - [x] 1 [介绍](./1-introduction/1-introduction.md)
-- [x] 2 [架构概述](./Architechture-overview/1-Architechture-overview.md)
+- [x] 2 [架构概述](./2-Architecture-overview/1-Architechture-overview.md)
 - [x] 3 [CPU](./3-CPU)
     - [x] 3.1 [CPU 寄存器](./3-CPU/1-CPU-Registers.md)
     - [ ] 3.2 寄存器数据指令
