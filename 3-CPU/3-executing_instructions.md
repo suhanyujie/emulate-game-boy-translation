@@ -82,7 +82,7 @@ impl Instruction {
 }
 ```
 
-And now let's change our execute method so that it now returns the next program counter:
+现在我们改变一下执行方法，让它返回下一个程序计数器：
 
 ```rust
 impl CPU {
@@ -96,19 +96,22 @@ impl CPU {
             self.registers.a = new_value;
             self.pc.wrapping_add(1)
           }
-          _ => { /* TODO: support more targets */ self.pc }
+          _ => { /* TODO: 支持更多的目标 */ self.pc }
         }
       }
-      _ => { /* TODO: support more instructions */ self.pc }
+      _ => { /* TODO: 支持更多的指令 */ self.pc }
     }
   }
 }
 ```
 
 Now we have the ability to read the instruction byte from memory that's pointed to by our program counter, decode that instruction byte as one of the variants of our `Instruction` enum, execute that instruction and get back the new program counter and finally set the new program counter on our CPU. This is how all instructions in the Game Boy get executed! Well, except...
+现在我们有能力从内存中读取指令，该指令指向我们的计数器，解码该指令字节作为 `Instruction` 枚举的变体，执行指令，返回新的程序计数器，最后在 CPU 上设定新的程序计数器。以上这些，就是描述 Game Boy 中的指令是如何执行的！除了 ……
 
 ## Prefix Instructions
+## 前缀指令
 The process we've laid out for how instructions get executed is true for roughly half of the total instructions the Game Boy can perform. The other half of instructions work the same way except that instead of being identified by a single byte they're first indentified by a prefix byte. This prefix byte tells the CPU, "Hey! The next instruction byte you read shouldn't be interpreted as a normal instruction, but rather as a prefix instruction".
+对于 Game Boy 中所能执行的所有指令中的一半，我们已经正确列出这些指令是如何执行的。另一半指令的工作方式也是类似的，只是它们不是由单个字节标识的，而是先由前缀字节标识。这个前缀字节告诉 CPU：嘿！你读取的下一个指令字节不应该作为普通指令来执行，而应作为“前缀指令”来执行。
 
 This prefix byte is the number "0xCB". So, we'll need to add logic that first checks to see if the byte we read from memory is 0xCB. If it is, we then need to read one more byte and interpret this byte as an "prefix instruction". For example, if we read 0xCB from memory, we know that we're going to be decoding a prefix instruction. We then read another byte. If that byte is, say, 0xB4, we should not interpret this as `OR` with `H` as the target like we normally would but rather as a `RES` instruction with the 6th bit of the `H` register as the target. Again we can use the [instruction guide](https://blog.ryanlevick.com/DMG-01/public/book/appendix/instruction_guide/index.html) to help us know what a given byte should decode as.
 
