@@ -8,9 +8,12 @@
 >Instructions for Reading and Writting to Memory 译文
 
 Now that we've seen how instructions get executed and the very basics of reading from memory in order to fetch the instructions to be read, we'll look now at instructions that are used to read and write from different parts of memory.
+现在我们呢已经了解了指令是如何执行的，以及从内存中获取要读取的指令的基本知识，接下来我们要研究从内存的不同地方度读写指令。
 
 ## Loading Memory
+## 内存加载
 First, when we talk about reading and writing memory, we usually use the term "load". We'll be loading data from some place to some place - for example, loading the contents of register A into memory at location 0xFF0A or loading register C with the contents from memory location 0x0040. Loading doesn't have to be between a register and a place in memory, it can also be between two registers or even two places in memory.
+首先，当我们谈论内存的读写时，我们通常使用“加载”这个词。我们把数据从一个地方加载到另一个地方 —— 例如，将寄存器 A 的内容加载到地址为 0xFF0A 的内存中，或者从地址为 0x0040 的内存中加载数据到寄存器 C 中。“加载”不一定是寄存器和某个内存之间发生，它可以发生在两个寄存器之间甚至内存中的两个区域。
 
 All of the instructions we'll be looking are called `LD` instructions. We'll be differentiating between the types of loads with the `LoadType` enum. The enum will describe what kind of load we're doing.
 
