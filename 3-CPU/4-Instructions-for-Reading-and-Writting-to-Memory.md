@@ -71,13 +71,17 @@ For loads with a register as a source, we simply read the register's value. If t
 当把寄存器作为源的情况，加载时，我们只需读取寄存器的值。而如果源是 `D8`（意思是“直接 8 位值”），那么该值在调用指令后将直接存储起来，因此我们可以简单地调用 `read_next_byte`，它在程序计数器当前指向的字节后直接读取字节。最后，如果源是 `HLI`，我们使用 `HL` 寄存器作为地址，从内存中读取 8 位值。
 
 The target is merely the reverse of the source (except that we can't have `D8` as a target). If the target is a register, we write the source value into that register, and if the target is `HLI` we write to the address that is stored inside of the `HL` register.
+目标仅仅是源的反面（除非我们不能将 `D8` 作为目标）。如果目标是一个寄存器，我们将源中的值写入该寄存器，如果目标是 `HLI`，我们呢将写入 `HL` 寄存器中的地址空间。
 
 The use of the 16-bit registers `BC`, `DE`, and `HL` to store addresses is very common.
+使用 16 位寄存器 `BC`、`DE` 和 `HL` 来存储地址是非常常见的。
 
-Let's take a look at the other types of loads that there are:
+我们看看其他类型的加载：
 
 * `Word`: just like the `Byte` type except with 16-bit values
+* `Word`: 就像 `Byte` 类型一样，只是有 16 位的值
 * `AFromIndirect`: load the A register with the contents from a value from a memory location whose address is stored in some location
+* `AFromIndirect`: 从内存位置（地址存储在某个位置）加载包含值的内容的寄存器
 * `IndirectFromA`: load a memory location whose address is stored in some location with the contents of the A register
 * `AFromByteAddress`: Just like `AFromIndirect` except the memory address is some address in the very last byte of memory.
 * `ByteAddressFromA`: Just like `IndirectFromA` except the memory address is some address in the very last byte of memory.
