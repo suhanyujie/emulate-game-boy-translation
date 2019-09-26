@@ -83,10 +83,13 @@ The use of the 16-bit registers `BC`, `DE`, and `HL` to store addresses is very 
 * `AFromIndirect`: load the A register with the contents from a value from a memory location whose address is stored in some location
 * `AFromIndirect`: 从内存位置（地址存储在某个位置）加载包含值的内容的寄存器
 * `IndirectFromA`: load a memory location whose address is stored in some location with the contents of the A register
+* `IndirectFromA`: 加载一个内存位置，其地址与寄存器的内容一起存储在某个位置
 * `AFromByteAddress`: Just like `AFromIndirect` except the memory address is some address in the very last byte of memory.
+* `AFromByteAddress`: 就像 `AFromIndirect`，只不过内存地址是内存的最后一个字节的某个地址
 * `ByteAddressFromA`: Just like `IndirectFromA` except the memory address is some address in the very last byte of memory.
+* `ByteAddressFromA`: 类似于 `IndirectFromA`，只不过内存地址是内存的最后一个字节的某个地址。
 
-For more detail on these instructions checkout the [instruction guide](https://blog.ryanlevick.com/DMG-01/public/book/appendix/instruction_guide/index.html).
+有关这些说明的更详细内容，可以参考[说明指南](https://blog.ryanlevick.com/DMG-01/public/book/appendix/instruction_guide/index.html)。
 
 These instructions have been for writing and writing to anywhere in memory, but there are a set of instructions that deal with a specific piece of memory called the stack. Let's take a look at what the stack is and the instructions that are used to manipulate the stack.
 
