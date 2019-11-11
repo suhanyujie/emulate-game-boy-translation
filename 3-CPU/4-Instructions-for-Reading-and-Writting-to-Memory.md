@@ -10,7 +10,6 @@
 Now that we've seen how instructions get executed and the very basics of reading from memory in order to fetch the instructions to be read, we'll look now at instructions that are used to read and write from different parts of memory.
 现在我们呢已经了解了指令是如何执行的，以及从内存中获取要读取的指令的基本知识，接下来我们要研究从内存的不同地方度读写指令。
 
-## Loading Memory
 ## 内存加载
 First, when we talk about reading and writing memory, we usually use the term "load". We'll be loading data from some place to some place - for example, loading the contents of register A into memory at location 0xFF0A or loading register C with the contents from memory location 0x0040. Loading doesn't have to be between a register and a place in memory, it can also be between two registers or even two places in memory.
 首先，当我们谈论内存的读写时，我们通常使用“加载”这个词。我们把数据从一个地方加载到另一个地方 —— 例如，将寄存器 A 的内容加载到地址为 0xFF0A 的内存中，或者从地址为 0x0040 的内存中加载数据到寄存器 C 中。“加载”不一定是寄存器和某个内存之间发生，它可以发生在两个寄存器之间甚至内存中的两个区域。
@@ -94,7 +93,9 @@ The use of the 16-bit registers `BC`, `DE`, and `HL` to store addresses is very 
 These instructions have been for writing and writing to anywhere in memory, but there are a set of instructions that deal with a specific piece of memory called the stack. Let's take a look at what the stack is and the instructions that are used to manipulate the stack.
 
 ## The Stack
+## 栈
 Before we can look at the piece of memory in the Game Boy known as the stack, we need to have a good understanding of what a stack is more generally. A stack is a simple data structure that allows you to add values to it (a.k.a "push" values) and then get these values back (a.k.a pop them off the stack). The key thing to remember with a stack is that you pop items off the stack in reverse order from which you pushed the items on - i.e., if you pushed three items "A", "B", "C" on to a stack in that order, the order you will get them back when poping them off is "C", "B", "A".
+在查看 Game Boy 中被称为栈的内存区域之前，我们要更好的理解堆栈是什么。简单来讲，堆栈是一个简单的数据结构，你可以向其中添加值（例如将值”push”进去），然后把这些值取出（例如将值“pop”出来）。
 
 The Game Boy CPU has built in support for a stack like data structure in memory. This stack lives somewhere in memory (we'll talk about how it's location in memory is set in just a minute), and it holds on to 16 bit values. How is it built?
 
