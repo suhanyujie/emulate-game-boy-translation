@@ -94,12 +94,12 @@ These instructions have been for writing and writing to anywhere in memory, but 
 
 ## The Stack
 ## 栈
-Before we can look at the piece of memory in the Game Boy known as the stack, we need to have a good understanding of what a stack is more generally. A stack is a simple data structure that allows you to add values to it (a.k.a "push" values) and then get these values back (a.k.a pop them off the stack). The key thing to remember with a stack is that you pop items off the stack in reverse order from which you pushed the items on - i.e., if you pushed three items "A", "B", "C" on to a stack in that order, the order you will get them back when poping them off is "C", "B", "A".
-在查看 Game Boy 中被称为栈的内存区域之前，我们要更好的理解堆栈是什么。简单来讲，堆栈是一个简单的数据结构，你可以向其中添加值（例如将值”push”进去），然后把这些值取出（例如将值“pop”出来）。
+在查看 Game Boy 中被称为栈的内存区域之前，我们要更好的理解堆栈是什么。简单来讲，堆栈是一个简单的数据结构，你可以向其中添加值（例如将值”push”进去），然后把这些值取出（例如将值“pop”出来）。记住堆栈的关键点是出栈和入栈的顺序是相反的，例如，如果降三个项目“A”，“B”，“C”按顺序送入栈中，取出时的顺序则是“C”，“B”，“A”。
 
 The Game Boy CPU has built in support for a stack like data structure in memory. This stack lives somewhere in memory (we'll talk about how it's location in memory is set in just a minute), and it holds on to 16 bit values. How is it built?
+Game Boy 的 CPU 已经对内存中栈数据结构建立了支持。该堆栈在内存中的某个位置中（我们将讨论在一分钟内设置它的位置），并且它的值是 16 位的。那么是如何建立支持的呢？
 
-First, the CPU has an additional 16-bit register on it that indicates the top of the stack. This register is called `SP` or stack pointer because it "points" to where the top of the stack is. Let's add this register to our CPU:
+首先 CPU 上有一个额外的 16 位寄存器，它指向栈的顶部。这个寄存器叫做 `SP` 或者堆栈指针，因为它指向堆栈顶部位置。我们先将这个寄存器加到 CPU 中：
 
 ```rust
 struct CPU {
