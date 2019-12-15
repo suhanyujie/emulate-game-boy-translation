@@ -7,8 +7,7 @@
 # 寄存器数据指令
 >Instructions for Reading and Writting to Memory 译文
 
-Now that we've seen how instructions get executed and the very basics of reading from memory in order to fetch the instructions to be read, we'll look now at instructions that are used to read and write from different parts of memory.
-现在我们呢已经了解了指令是如何执行的，以及从内存中获取要读取的指令的基本知识，接下来我们要研究从内存的不同地方度读写指令。
+现在我们已经了解指令是如何执行的，以及从内存中获取要读取的指令的基本知识，接下来我们要研究从内存的不同地方读写指令。
 
 ## 内存加载
 First, when we talk about reading and writing memory, we usually use the term "load". We'll be loading data from some place to some place - for example, loading the contents of register A into memory at location 0xFF0A or loading register C with the contents from memory location 0x0040. Loading doesn't have to be between a register and a place in memory, it can also be between two registers or even two places in memory.
@@ -110,20 +109,21 @@ struct CPU {
 }
 ```
 
-We have a stack pointer now so we know where our stack is, but how do we push and pop from this stack?
+现在我们有了栈指针，也就知道了栈所在的位置，但我们如何从这个栈中 push 和 pop 数据呢？
 
-The Game Boy's CPU understands two insructions for doing just that. `PUSH` will write the contents of any 16-bit register into the stack and `POP` writes the head of stack into any 16-bit register.
+Game Boy 的 CPU 拥有这两个指令的功能。`PUSH` 会把 16 位寄存器的内容写入栈中，`POP` 会将数据从栈顶写入 16 位寄存器中。
 
 Here's what's actually happening when a `PUSH` is performed:
+下面是当你 `PUSH` 数据时所发生的的：
 
-* Decrease the stack pointer by 1.
-* Write the most significant byte of the 16 bit value into memory at the location the stack pointer is now pointing to
-* _Decrease_ the stack pointer by 1 again.
-* Write the least significant byte of the 16 bit value into memory at the location the stack pointer is now pointing to
+* 栈指针减 1。
+* 将 16 位值中高位有效字节写到当前栈指针指向的内存中。
+* 栈指针再次 _减_ 1.
+* 将 16 位数据的低位字节写入到当前栈指针指向的内存中
 
-Notice that the stack pointer is decresed by 1 and not increased. This is because the stack grows downward in memory. This is extra helpful since the normal place for the stack to live is at the very end of memory. In a later chapter we'll see that it's actually the Game Boy's boot ROM that sets the stack pointer to the very end of memory. Thus, when the stack grows it grows away from the end of memory towards the beginning of memory.
+注意，栈指针减 1 而不是加 1。这是因为栈地址在内存中是向下增长的。这一点很重要，因为栈的正常位置位于内存的末端。在后面的章节中，我们将看到 Game Boy 的引导 ROM 将栈指针设到内存的末尾。因此，当栈递增时，它会从内存的末端增长到内存的起始端。
 
-Let's implement `PUSH`:
+实现一下 `PUSH`:
 
 ```rust
 impl CPU {
@@ -151,15 +151,15 @@ impl CPU {
 }
 ```
 
-We can now push elements on to the stack. Here's what's actually happening when a `PUSH` is performed:
+我们现在可以将值 push 到栈中。下面是 `PUSH` 操作发生时的流程：
 
-* Read the least significant byte of the 16 bit value from memory at the location the stack pointer is pointing to
-* _Increase_ the stack pointer by 1.
-* Read the most significant byte of the 16 bit value from memory at the location the stack pointer is now pointing to
-* _Increase_ the stack pointer by 1 again.
-* Return the value with the most and least significant byte combined together
+* 从栈指针指向的内存中的 16 位值中读取低有效位的字节。
+* 栈指针 _加_ 1
+* 从栈指针指向的内存中的 16 位值中读取高有效位的字节。
+* 栈指针再次 _加_ 1
+* 返回高有效位和低有效位组合在一起的值。
 
-Let's write `POP`:
+我们实现一下 `POP`：
 
 ```rust
 impl CPU {
@@ -189,21 +189,21 @@ impl CPU {
 }
 ```
 
-And there we have it! We have a working stack that we can used. But what sort of things is the stack used for? One built in use for the stack is creating a "call" stack that allows the game to "call" functions and return from them. Let's see how that works.
+好了！我们现在有了可以使用的栈了。但是它到底用来做什么呢？一个内建的栈是用于创建一个“调用”栈，它可以让游戏“调用”函数并从中返回一些值。我们看看它是如何工作的。
 
-## Calling Functions
-In most programming languages when you call a function, the state of the calling function is saved somewhere, execution is allowed to happen for the called function, and then when the called function returns, the state of the called function is restored. It turns out the Game Boy has built in support for this mechanism where the state that is saved is simply just what the program counter was when the called function was called. This means we can "call a function" and that function itself can call functions, and when all of that is done, we'll return right back to the place we left off before we called the function.
+## 函数调用
+在大多数编程语言中，当你调用一个函数时，调用函数的状态会被保存在某个地方，以让对应的函数执行，然后当被调用函数返回时，被调用函数的状态会恢复。所以 Game Boy 也内置了对这种机制的支持，其中保存的状态就是调用函数时程序计数器的状态。这意味着“调用一个函数”中的函数还可以继续调用其他函数，当所有这些调用执行完成后，将会回到一开始调用函数时的地方。
 
-This functionality is handled by two types of instructions `CALL` and `RET` (a.k.a return). The way `CALL` works is by using a mixture of two instructions we already know about `PUSH` and `JP` (a.k.a jump). To execute the `CALL` instruction, we must do the following:
+这个功能是由两种类型的指令来处理的：`CALL` 和 `RET`（即“返回”）。其中，`CALL` 的工作方式是使用我们已知的 `PUSH` 和 `JP`（即 jump）指令。要执行 `CALL` 指令，我们必须执行以下操作：
 
-* `PUSH` the next program counter (i.e. the program counter we would have if we were not jumping) on to the stack
-* `JP` (a.k.a jump) to the address specified in the next 2 bytes of memory (a.k.a the function).
+* 将下一个程序计数器（例如没有跳转，我们就会得到该程序计数器）`PUSH` 到栈中
+* `JP`（即“跳转”）到下一个内存字节指向的地址上（即函数）
 
-And that's it! We've called into our function. But what happens when we call `RET` (a.k.a return) from our called function? Here's what will happen:
+就是这样！我们调用了函数。但是当我们在调用的函数中执行 `RET`（即返回）指令时会发生什么呢？
 
-* `POP` the next program counter off the stack and jump back to it.
+* 从栈中 `POP` 出下一个程序计数器，并跳转到它指向的位置。
 
-Well that's easy! Let's see it in code:
+这很简单！我们用代码实现它：
 
 ```rust
 impl CPU {
@@ -247,4 +247,4 @@ impl CPU {
 }
 ```
 
-Now we can easily call functions and return from them. We're now done with the vast majority of our CPU instructions!
+现在我们可以很容易地调用函数并从中返回数据了。现在，我们已经完成绝大部分的 CPU 指令了！
