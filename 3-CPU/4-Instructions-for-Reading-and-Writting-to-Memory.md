@@ -12,11 +12,9 @@
 ## 内存加载
 首先，当我们谈论内存的读写时，我们通常使用“加载”这个词。我们把数据从一个地方加载到另一个地方 —— 例如，将寄存器 A 的内容加载到地址为 0xFF0A 的内存中，或者从地址为 0x0040 的内存中加载数据到寄存器 C 中。“加载”不一定是在寄存器和某块内存之间发生，它也可以发生在两个寄存器之间甚至内存的两个区域之间。
 
-All of the instructions we'll be looking are called `LD` instructions. We'll be differentiating between the types of loads with the `LoadType` enum. The enum will describe what kind of load we're doing.
-我们看到的所有指令都成为 `LD` 指令。我们将使用 `LoadType` 的枚举类型来区分加载的类型。枚举将描述我们正在使用的加载类型。
+我们要查找的所有指令都称为 `LD` 指令。我们将使用 `LoadType` 的枚举类型来区分加载的类型。枚举用于描述我们正在使用的加载类型。
 
-Let's take a look at the implementation of the `LD` instruction with the `LoadType` of `Byte` which loads a byte from one place to another.
-我们先看看 `LD` 指令的实现，它的 `LoadType` 是 `Byte`，它将“一个字节”的内容从一个地方加载到另一个地方。
+我们来看看 `LD` 指令的实现，它的 `LoadType` 是 `Byte`，它将“一个字节”的内容从一个地方加载到另一个地方。
 
 ```rust
 fn write_byte(&self, addr: u16, byte: u8) {}
@@ -65,7 +63,7 @@ impl CPU {
 ```
 
 For loads with a register as a source, we simply read the register's value. If the source is a `D8` (meaning "direct 8 bit value"), the value is stored directly after the instruction, so we can simply call `read_next_byte` which reads the byte directly after the byte the program counter is currently pointing to. Lastly, if the source is `HLI` we use the value inside of the `HL` register as an address from which we read an 8 bit value from memory.
-当把寄存器作为源的情况，加载时，我们只需读取寄存器的值。而如果源是 `D8`（意思是“直接 8 位值”），那么该值在调用指令后将直接存储起来，因此我们可以简单地调用 `read_next_byte`，它在程序计数器当前指向的字节后直接读取字节。最后，如果源是 `HLI`，我们使用 `HL` 寄存器作为地址，从内存中读取 8 位值。
+当把寄存器作为源时，加载时，我们只需读取寄存器的值。而如果源是 `D8`（意思是“直接 8 位值”），那么该值在调用指令后将直接存储起来，因此我们可以简单地调用 `read_next_byte`，它直接读取位于程序计数器当前所指向位置后的字节。最后，如果源是 `HLI`，我们使用 `HL` 寄存器作为地址，从其中的内存中读取 8 位数据值。
 
 The target is merely the reverse of the source (except that we can't have `D8` as a target). If the target is a register, we write the source value into that register, and if the target is `HLI` we write to the address that is stored inside of the `HL` register.
 目标仅仅是源的反面（除非我们不能将 `D8` 作为目标）。如果目标是一个寄存器，我们将源中的值写入该寄存器，如果目标是 `HLI`，我们呢将写入 `HL` 寄存器中的地址空间。
