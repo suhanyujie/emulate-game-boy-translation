@@ -66,9 +66,8 @@ For loads with a register as a source, we simply read the register's value. If t
 当把寄存器作为源时，加载时，我们只需读取寄存器的值。而如果源是 `D8`（意思是“直接 8 位值”），那么该值在调用指令后将直接存储起来，因此我们可以简单地调用 `read_next_byte`，它直接读取位于程序计数器当前所指向位置后的字节。最后，如果源是 `HLI`，我们使用 `HL` 寄存器作为地址，从其中的内存中读取 8 位数据值。
 
 The target is merely the reverse of the source (except that we can't have `D8` as a target). If the target is a register, we write the source value into that register, and if the target is `HLI` we write to the address that is stored inside of the `HL` register.
-目标仅仅是源的反面（除非我们不能将 `D8` 作为目标）。如果目标是一个寄存器，我们将源中的值写入该寄存器，如果目标是 `HLI`，我们呢将写入 `HL` 寄存器中的地址空间。
+目标仅仅是源的反向（除非我们不能将 `D8` 作为目标）。如果目标是一个寄存器，我们将来源中的值写入该寄存器，如果目标是 `HLI`，我们将写到存储在 `HL` 寄存器内的地址中。
 
-The use of the 16-bit registers `BC`, `DE`, and `HL` to store addresses is very common.
 使用 16 位寄存器 `BC`、`DE` 和 `HL` 来存储地址是非常常见的。
 
 我们看看其他类型的加载：
@@ -86,9 +85,8 @@ The use of the 16-bit registers `BC`, `DE`, and `HL` to store addresses is very 
 
 有关这些说明的更详细内容，可以参考[说明指南](https://blog.ryanlevick.com/DMG-01/public/book/appendix/instruction_guide/index.html)。
 
-These instructions have been for writing and writing to anywhere in memory, but there are a set of instructions that deal with a specific piece of memory called the stack. Let's take a look at what the stack is and the instructions that are used to manipulate the stack.
+这些指令用于写入和写入内存中的任意位置，但是有一组指令是专门处理栈的内存段。我们下面看看什么是栈，以及操作栈的指令有哪些。
 
-## The Stack
 ## 栈
 在查看 Game Boy 中被称为栈的内存区域之前，我们要更好的理解堆栈是什么。简单来讲，堆栈是一个简单的数据结构，你可以向其中添加值（例如将值”push”进去），然后把这些值取出（例如将值“pop”出来）。记住堆栈的关键点是出栈和入栈的顺序是相反的，例如，如果降三个项目“A”，“B”，“C”按顺序送入栈中，取出时的顺序则是“C”，“B”，“A”。
 
