@@ -1,6 +1,7 @@
 ## Rust 实现游戏模拟器 Game boy
 * 这个仓库是翻译的中文版。原文 https://blog.ryanlevick.com/DMG-01/public/book/
 * 如果对你有帮助，请给颗 ☆
+* 转载请注明出处！
 
 ## 目录
 - [x] 1 [介绍](./1-introduction/1-introduction.md)
