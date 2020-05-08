@@ -7,10 +7,10 @@
 - [x] 2 [架构概述](./2-Architecture-overview/1-Architechture-overview.md)
 - [x] 3 [CPU](./3-CPU)
     - [x] 3.1 [CPU 寄存器](./3-CPU/1-CPU-Registers.md)
-    - [x] 3.2 寄存器数据指令
-    - [x] 3.3 指令执行器和控制流
-    - [ ] 3.4 内存读写指令
-    - [ ] 3.4 CPU 完成
+    - [x] 3.2 [寄存器数据指令](3-CPU/2-Instructions-on-Register-Data.md)
+    - [x] 3.3 [指令执行器和控制流](3-CPU/3-executing_instructions.md)
+    - [x] 3.4 [内存读写指令](3-CPU/4-Instructions-for-Reading-and-Writting-to-Memory.md)
+    - [x] 3.4 CPU 完成
 - [ ] 4 图形
 
 ## 参与翻译
