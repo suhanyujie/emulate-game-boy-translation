@@ -6,19 +6,19 @@
 >* 译文出处：https://github.com/suhanyujie/emulate-game-boy-translation
 >* 译者：[suhanyujie](https://github.com/suhanyujie)
 
-## [Finishing Up the CPU](#finishing-up-the-cpu)
+## 完成 CPU
 
-We've nearly reached the end of building our CPU. There are a few instructions left to implement, many of which we won't touch on here, since they're closely tied with other parts of the Game Boy that we've yet to talk about.
+我们的 CPU 部分已经快要完成了。还有许多指令需要实现，其中的很多在这一章没有涉及，因为它们与 Game Boy 的其他部分息息相关，只不过我们还未讨论到罢了。
 
-## [Remaining Instructions](#remaining-instructions)
+## 剩下的指令
 
-In this chapter, we'll look at two more instructions: `NOP` and `HALT`
+在这一章，我们看看这两个指令：`NOP` 和 `HALT`
 
-### [NOP](#nop)
+### NOP 指令
 
 `NOP` is perhaps the simplest of the Game Boy's instructions. It stands for no-operation and it effectively does nothing except advance the program counter by 1.
 
-### HALT
+### HALT 指令
 
 `HALT` is a big more complicated than `NOP`. When the Game Boy is running, it is constantly in a loop executing instructions. The `HALT` instruction gives the game the ability to stop the CPU from executing any more instructions. How the Game Boy eventually continues executing instructions will be discussed later in the book, but for now, we have the ability to stop the Game Boy dead in its tracks. Reasons a game might want to do this include saving battery. If the game doesn't have anything to do, it can halt the CPU and save a bit energy.
 
