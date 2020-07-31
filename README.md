@@ -15,6 +15,7 @@
     - [x] 3.4 [CPU 完成](3-CPU/5-Finishing-Up-the-CPU.md)
 - [ ] 4 [图形](4-graphics)
     - [x] 4.1 [概述](4-Graphics/1-introduction.md)
+    - [ ] 4.2 [概述](4-graphics/2-tile-ram.md)
 
 ## 参与翻译
 * 一个人时间和精力有限，如果你能参与一起翻译，那就再好不过。请提 issue 告知。
