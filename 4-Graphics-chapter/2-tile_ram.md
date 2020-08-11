@@ -22,8 +22,10 @@ As we've seen before in our overview of the memory map of the Game Boy, tile dat
 >正如之前的 Game Boy 内存映射概述中所描述的，平铺数据存储在 0x8000 和 0x97FF（0x1800 或 6144 字节的内存）之间的内存片段上。这个区域实际上包含两个独立的内存片段。这允许游戏非常快速地在两种不同风格的图形之间切换，而不必实时地分开两段内存。稍后，我们将探讨如何在这两个内存片段之间切换设置位。
 
 For now, we'll be focusing on the first tile set in memory that resides at 0x8000 to 0x8FFF (for a total of 0x1000 or 4096 bytes worth of data). Each tile is encoded in 16 bytes (we'll talk about exactly what this encoding looks like below). So if we 0x1000 bytes worth of memory and each tile is encoded in 16 bytes, then we have 0x1000 / 0x10 or 0x100 (256) different tiles.
+>现在，我们将关注内存中的第一片区域，它位于 0x8000 到 0x8FFF 之间（相当于总共 0x1000 大小或者 4096 字节的数据）。每个 tile 都被编码为 16 个字节（我们下面将讨论这种编码是什么样）。因此，如果我们有 0x1000 字节的内存，并且每个 tile 都被编码为 16 字节，那么我们就有 0x1000/0x10 即 0x100（256）个不同的内存块（tile）。
 
 An observant reader might wonder why the first tile set takes up 0x1000 of the 0x1800 or two thirds worth of space alloted for tile memory. The truth is that the second tile set starts at 0x8800 and goes to 0x97FF. The chunk between 0x8800 and 0x8FFF is therefore shared by the two tile sets.
+>细心的读者可能会想，为什么...
 
 TODO: Make nicer chart
 
