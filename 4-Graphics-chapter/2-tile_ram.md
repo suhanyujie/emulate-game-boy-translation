@@ -1,7 +1,7 @@
 # Tile Ram
 * 内存片
->Tile Ram 译文
 
+>* Tile Ram 译文
 >* 原文链接：https://github.com/rylev/DMG-01/blob/master/book/src/graphics/tile_ram.md
 >* 译文出处：https://github.com/suhanyujie/emulate-game-boy-translation
 >* 译者：[suhanyujie](https://github.com/suhanyujie)
@@ -27,7 +27,7 @@ For now, we'll be focusing on the first tile set in memory that resides at 0x800
 An observant reader might wonder why the first tile set takes up 0x1000 of the 0x1800 or two thirds worth of space alloted for tile memory. The truth is that the second tile set starts at 0x8800 and goes to 0x97FF. The chunk between 0x8800 and 0x8FFF is therefore shared by the two tile sets.
 >细心的读者可能会想，为什么...
 
-TODO: Make nicer chart
+TODO: 画一张图
 
 ```
 8000-87FF: First part of tile set #1
@@ -37,11 +37,14 @@ TODO: Make nicer chart
 ```
 
 So how are each of the tiles encoded? First, we need to understand how many different colors a pixel of the Game Boy can display. The Game Boy is capable of displaying 4 different colors: white, light gray, dark gray, and black. The minimal number of bits that we need to encode this information is 2 bits since two bits can encode 4 different numbers: 0b00, 0b01, 0b10, and 0b11.
+>每一片像素是如何编码的呢？首先，我们需要了解 Game Boy 的一个像素可以显示多种不同的颜色。Game Boy 可以显示 4 种不同的颜色：白色、浅灰色、深灰色和黑色。因此，编码这些最少需要 2 位，因为 2 位最多可以编码 4 个不同的数值：0b00、0b01、0b10 和 0b11.
 
 >* Learn More
 >* The way the Game Boy hardware displays the 4 different colors is simply by emitting 4 different levels of white light. For "white" for instance the light is fully on, while for black the light is fully off. Light and dark gray are at 33% light and 66% light respectively. In fact, calling these colors white, gray and black isn't really true since the screen of the original Game Boy was green so the colors players see are actually shades of green.
+>* Game Boy 硬件显示 4 种不同颜色的方式是通过发射 4 种不同级别的白光。如，“白色”，灯是完全亮着的，而对于“黑色”，灯是完全关闭的。浅色和深灰色分别是 66% 的亮度和 33% 的亮度。事实上，称这些颜色为白色、灰色和黑色不完全正确，因为最初的 Game Boy 的屏幕是绿色，所以玩家看到的颜色实际上是绿色的阴影。
 
 The bit value to color mapping is as follows:
+>对颜色映射的“位值”如下：
 
 ```
 +------+------------+
@@ -53,14 +56,19 @@ The bit value to color mapping is as follows:
 ```
 
 So each pixel of our 8x8 pixel (i.e., 64 pixels in total) tile will take 2 bits to represent. That means we'll need 64 * 2 or 128 bits total to represent all the pixels. In terms of number of bytes that's 128 / 8 or 16 bytes total as we've said above.
+>所以，我们的 8x8 像素（即总共 64 像素）贴图的每个像素将需要占用 2 位。这意味着我们需要 64*2 即 128 位来表示所有像素。换算到字节数是 128/8 即 16 字节，和前面提到的一致。
 
 So this shouldn't be too hard to encode right? Just start from the top left most pixel and every two bits we encode that pixels value right? Unfortunately not. The actual encoding scheme is a little bit more complicated.
+>这应该不难编码，对吧？从最左上角的像素开始，每隔两位我们对像素值进行编码？很遗憾，不是这样的，实际的编码方式稍微有点复杂。
 
 Each row of a tile is 2 bytes worth of data (8 pixels with 2 bits per pixel equals 16 bits or 2 bytes). Instead of each pixels value coming one after the other, each pixel is split between the two bytes. So the first pixel is encoded with the left most (i.e., most significant bit a.k.a bit 7) of each byte.
+>每个内存块是 2 字节大小（8 个像素，单个占用 2 位，一共是 16 位/ 2 字节）。每个像素值不是一个接一个地出现，而是由两个分隔开的字节组成。因此，第一个像素是用每个字节地最左边（最大的有效位值是 7）表示的。
 
 For example, let's imagine that the first two bytes of our tile set memory were 0xB5 (0b10110101) and 0x65 (0b01100101). These two bytes together will encode the data for the first tile. Byte 1 contains the value of the upper (a.k.a most significant) bit and byte 2 contains the value of the lower (least significant) bit.
+>例如，我们假设内存块的第一个两字节是 0xB5 (0b10110101) 和 0x65 (0b01100101)。这两个字节一起给第一个图编码数据。字节 1 包含最高位的值，字节 2 包含最低位的值。 
 
 Let's take a look at how this looks. In the following diagram that colors are represented by 1 letter "B" for black, "D" for dark-gray, "L" for light-gray and "W" for white.
+>我们看看具体是怎样的。在下面的图表中，颜色用一个字母表示，B 代表黑色，D 代表 深灰色，L 代表浅灰色，W 代表白色。
 
 ```
              Bit Position
@@ -75,6 +83,7 @@ s            D L W D B W B W
 ```
 
 Since reading the tile data happens much more often than writing it, we can store the tile data internally in a more friendly way.
+>因为读取块数据比写入要频繁很多，所以我们以一种更友好的方式在内部存储数据块。
 
 Let's write some code to see what we need. First, we're going to create a new struct that will be responsible for all the graphics needs of the Game Boy. This loosely mimics the set up of actual hardware where the CPU knows nothing about graphics and all. There's no one chip responsible for graphics instead there is dedicated video RAM and the screen hardware. It would over complicate things if we tried to too closely mimic this set up. Instead we'll create the GPU or "Graphic Processing Unit" to model all of our video needs.
 
