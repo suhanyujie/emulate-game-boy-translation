@@ -86,8 +86,10 @@ Since reading the tile data happens much more often than writing it, we can stor
 >因为读取块数据比写入要频繁很多，所以我们以一种更友好的方式在内部存储数据块。
 
 Let's write some code to see what we need. First, we're going to create a new struct that will be responsible for all the graphics needs of the Game Boy. This loosely mimics the set up of actual hardware where the CPU knows nothing about graphics and all. There's no one chip responsible for graphics instead there is dedicated video RAM and the screen hardware. It would over complicate things if we tried to too closely mimic this set up. Instead we'll create the GPU or "Graphic Processing Unit" to model all of our video needs.
+>我们先写一部分代码看看需要什么。首先，创建一个结构体，它负责 Game Boy 的所有图形需求。它大致模仿了实际硬件的设置，其中 CPU 不会管理图形和其他处理。没有一个芯片负责图形，而是有专用的视频 RAM 和屏幕硬件。如果我们试图充分地模仿这种硬件，就会增加复杂度。相反，我们会创建 GPU 或“图形处理单元”来模拟所有的图像需求。
 
 For now, our GPU will hold on to video RAM and our tile set data. Our video ram is just a long array which holds on to raw byte values. The tile set will also be an array of tiles. A tile is simply an array of 8 rows where a row is an array of 8 TileValues.
+>现在，我们的 GPU 将保存视频和图像数据。我们的视频内存只是一个保存原始字节值的长数组。图像集合也是一个数组。平铺一下就是一个 8 行的数组，其中每一行是包含 8 个值的数组。
 
 ```rust
 const VRAM_BEGIN: usize = 0x8000;
@@ -114,6 +116,7 @@ struct GPU{
 ```
 
 Let's go back to our memory bus to redirect any of writes in memory to our video ram to go to the GPU:
+>我们回到内存总线，将内存中的所有数据重定向到视频内存中，以便于 GPU 进行处理：
 
 ```rust
 # const VRAM_BEGIN: usize = 0x8000;
@@ -147,8 +150,10 @@ impl MemoryBus {
 ```
 
 Notice how from the MemoryBus we don't directly access the vram but instead go through two methods read_vram and write_vram. This is so we can easily cache our tile set in the tile_set field of our CPU. Let's take a look at how these are implemented.
+>注意，在内存总线（MemoryBus）中，我们不直接访问 vram（视频内存），而是通过两个方法 read_vram 和 write_vram 读写。这样我们就可以轻松地将内存片设置缓存到 CPU 的 tile_set 字段中。我们看看具体实现：
 
 read_vram is very simple as it actually just reads from the vram array:
+>read_vram 非常简单，因为它实际上只是从 vram 数组中读数据：
 
 ```rust
 # struct GPU { vram: Vec<u8> }
