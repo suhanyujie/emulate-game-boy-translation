@@ -1,5 +1,5 @@
 # Tile Ram
-* 内存片
+* 内存块/片
 
 >* Tile Ram 译文
 >* 原文链接：https://github.com/rylev/DMG-01/blob/master/book/src/graphics/tile_ram.md
