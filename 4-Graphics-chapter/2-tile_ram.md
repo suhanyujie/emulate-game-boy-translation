@@ -14,18 +14,18 @@ Game Boy games do not have direct control over what appears in the background. T
 
 待办事项:用图表显示两者之间的区别（译者注：原作者标注的，这部分暂时没有完善）
 
-## Creating Tiles
+## 创建像素块
 So before we look at how pixels on the screen are shown, we first have to see how games manipulate and store tiles.
->所以在看到屏幕上显示像素之前，我们首先看看游戏是如何操作和存档的。
+>所以在看到屏幕上显示像素之前，我们首先看看游戏是如何操作和保存像素卡块的。
 
 As we've seen before in our overview of the memory map of the Game Boy, tile data is stored between 0x8000 and 0x97FF (0x1800 or 6144 bytes worth of memory). This area actually contains two seperate tile sets. This allows the game to very quickly switch between two differnt graphic styles without having to switch the tiles out in the time between two screens. We'll explore how the game switches between the two tile sets a bit later.
->正如之前的 Game Boy 内存映射概述中所描述的，平铺数据存储在 0x8000 和 0x97FF（0x1800 或 6144 字节的内存）之间的内存片段上。这个区域实际上包含两个独立的内存片段。这允许游戏非常快速地在两种不同风格的图形之间切换，而不必实时地分开两段内存。稍后，我们将探讨如何在这两个内存片段之间切换设置位。
+>正如之前的 Game Boy 内存映射概述中所描述的，“平铺块”数据存储在 0x8000 和 0x97FF（0x1800 或 6144 字节的内存）之间的内存片段上。这个区域实际上包含两个独立的内存片段。这允许游戏非常快速地在两种不同风格的图形之间切换，而不必实时地分开两段内存。稍后，我们将探讨如何在这两个内存片段之间切换设置位。
 
 For now, we'll be focusing on the first tile set in memory that resides at 0x8000 to 0x8FFF (for a total of 0x1000 or 4096 bytes worth of data). Each tile is encoded in 16 bytes (we'll talk about exactly what this encoding looks like below). So if we 0x1000 bytes worth of memory and each tile is encoded in 16 bytes, then we have 0x1000 / 0x10 or 0x100 (256) different tiles.
 >现在，我们将关注内存中的第一片区域，它位于 0x8000 到 0x8FFF 之间（相当于总共 0x1000 大小或者 4096 字节的数据）。每个 tile 都被编码为 16 个字节（我们下面将讨论这种编码是什么样）。因此，如果我们有 0x1000 字节的内存，并且每个 tile 都被编码为 16 字节，那么我们就有 0x1000/0x10 即 0x100（256）个不同的内存块（tile）。
 
 An observant reader might wonder why the first tile set takes up 0x1000 of the 0x1800 or two thirds worth of space alloted for tile memory. The truth is that the second tile set starts at 0x8800 and goes to 0x97FF. The chunk between 0x8800 and 0x8FFF is therefore shared by the two tile sets.
->细心的读者可能会想，为什么...
+>细心的读者可能会想，为什么第一个像素块占用了 0x1800 中的 0x1000，或者分配给像素块三分之二的空间。事实上第二个像素块是从 0x8800 到 0x97FF。因此，0x8800 和 0x97FF 之间的区域被两个像素块共享的。
 
 TODO: 画一张图
 
@@ -48,10 +48,10 @@ The bit value to color mapping is as follows:
 
 ```
 +------+------------+
-| 0b11 | white      |
-| 0b10 | dark-gray  |
-| 0b01 | light-gray |
-| 0b00 | black      |
+| 0b11 | 白色      |
+| 0b10 | 黑灰      |
+| 0b01 | 浅灰      |
+| 0b00 | 黑色      |
 +------+------------+
 ```
 
@@ -71,7 +71,7 @@ Let's take a look at how this looks. In the following diagram that colors are re
 >我们看看具体是怎样的。在下面的图表中，颜色用一个字母表示，B 代表黑色，D 代表 深灰色，L 代表浅灰色，W 代表白色。
 
 ```
-             Bit Position
+             Bit 位置
 A            7 6 5 4 3 2 1 0
 d          +-----------------+
 d  0x8000  | 1 0 1 1 0 1 0 1 |
@@ -79,7 +79,7 @@ r          |-----------------|
 e  0x8001  | 0 1 1 0 0 1 0 1 |
 s          +-----------------+
 s            D L W D B W B W
-                 Color
+                 颜色
 ```
 
 Since reading the tile data happens much more often than writing it, we can store the tile data internally in a more friendly way.
@@ -165,6 +165,7 @@ impl GPU {
 ```
 
 However, write_vram is much more involved. Let's take a look at the code and go line by line to see what's happening:
+>然而，write_vram 要复杂得多。我们看看代码，逐行分析一下发生了什么：
 
 ```rust
 # #[derive(Copy,Clone)]
@@ -175,25 +176,31 @@ impl GPU {
         self.vram[index] = value;
         // If our index is greater than 0x1800, we're not writing to the tile set storage
         // so we can just return.
+        // 如果索引大于 0x1800，我们将不写入内存块，直接进行返回。
         if index >= 0x1800 { return }
 
         // Tiles rows are encoded in two bytes with the first byte always
         // on an even address. Bitwise ANDing the address with 0xffe
         // gives us the address of the first byte.
         // For example: `12 & 0xFFFE == 12` and `13 & 0xFFFE == 12`
+        // tile 行用两个字节编码，第一个字节总是在偶数地址上。与 0xffe 进行按位和，得到第一个字节的地址。如 `12 & 0xFFFE == 12` and `13 & 0xFFFE == 12`
         let normalized_index = index & 0xFFFE;
 
         // First we need to get the two bytes that encode the tile row.
+        // 首先，我们需要获得用于“平铺行”编码的两个字节。
         let byte1 = self.vram[normalized_index];
         let byte2 = self.vram[normalized_index + 1];
 
         // A tiles is 8 rows tall. Since each row is encoded with two bytes a tile
         // is therefore 16 bytes in total.
+        // 一个 tile 有 8 行的高度。每一行都是用两个字节编码的，所以一个平铺总是 16 个字节。
         let tile_index = index / 16;
         // Every two bytes is a new row
+        // 每两个字节组成一个新行
         let row_index = (index % 16) / 2;
 
         // Now we're going to loop 8 times to get the 8 pixels that make up a given row.
+        // 现在，我们要循环 8 次，得到一整行 8 个像素。
         for pixel_index in 0..8 {
             // To determine a pixel's value we must first find the corresponding bit that encodes
             // that pixels value:
@@ -238,5 +245,7 @@ impl GPU {
 TODO: other tile set TODO: tile map
 
 We now have a cache of our tile ram so that not only do we have the information directly in VRAM but we also have it in a more accessible format.
+>我们现在有了一个缓存块，这样我们不仅可以直接在 VRAM 中获得信息，而且还可以以更方便的格式获取信息。
 
 Next we'll get into the details of rendering.
+>接下来我们将讨论渲染的细节部分。
