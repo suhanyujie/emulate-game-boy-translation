@@ -7,22 +7,22 @@
 >* 译者：[suhanyujie](https://github.com/suhanyujie)
 
 Before we can display background graphics to the screen, we have to have a good understanding of how background graphics actually work and where those graphics are stored in memory.
->在我们将背景图显示到显示屏上前，我们需要对背景图显示的工作原理进行比较清晰的了解。 
+>在我们将背景图显示到显示屏上前，我们需要对背景图显示的工作原理以及它在内存中的存储方式进行比较清晰的了解。 
 
 Game Boy games do not have direct control over what appears in the background. This is because the Game Boy is limited in how much it can store for graphics. The Game Boy has 0x1FFF (8191) bytes worth of storage for background graphics. Unlike more modern systems that employ a direct "frame buffer" (i.e., a long array of bytes where each byte or set of bytes describes how a corresponding pixel should be displayed on screen), the Game Boy uses a tiling system. This system allows the game to build 8 pixel by 8 pixel tiles and then place each tile on the screen at a certain index.
->Game boy 游戏机不能直接控制显示屏上的图像显示。这是因为 Game boy 的图形存储能力很有限。Game boy 有 0x1FFF (8191) 字节的存储空间用于显示。跟现如今很多系统使用的“帧缓冲区”（如，一个长字节数组，其中每个字节或一组字节对应的像素应该如何在屏幕上显示）有很大不同。Game boy 使用的是平铺系统。这个系统允许游戏构建 8x8 像素的区块，然后每个区块按一定的索引渲染到屏幕上。
+>Game boy 游戏机不能直接控制显示屏上的图像显示。这是因为 Game boy 的图形存储能力很有限。Game boy 有 0x1FFF (8191) 字节的存储空间用于显示。跟现如今很多系统使用的“帧缓冲区”（如，一个长字节数组，其中每个字节或一组字节对应的像素应该如何在屏幕上显示）有很大不同。Game boy 使用的是平铺系统（tiling system）。这个系统可以让游戏构建 8x8 像素的区块，然后每个区块按一定的顺序渲染到屏幕上。
 
-待办事项:用图表显示两者之间的区别（译者注：原作者标注的，这部分暂时没有完善）
+待办事项：用图表显示两者之间的区别（译者注：原作者标注的，这部分暂时没有完善）
 
 ## 创建像素块
 So before we look at how pixels on the screen are shown, we first have to see how games manipulate and store tiles.
->所以在看到屏幕上显示像素之前，我们首先看看游戏是如何操作和保存像素卡块的。
+>所以在看到屏幕上显示像素之前，我们首先看看游戏是如何操作和保存像素块的。
 
 As we've seen before in our overview of the memory map of the Game Boy, tile data is stored between 0x8000 and 0x97FF (0x1800 or 6144 bytes worth of memory). This area actually contains two seperate tile sets. This allows the game to very quickly switch between two differnt graphic styles without having to switch the tiles out in the time between two screens. We'll explore how the game switches between the two tile sets a bit later.
->正如之前的 Game Boy 内存映射概述中所描述的，“平铺块”数据存储在 0x8000 和 0x97FF（0x1800 或 6144 字节的内存）之间的内存片段上。这个区域实际上包含两个独立的内存片段。这允许游戏非常快速地在两种不同风格的图形之间切换，而不必实时地分开两段内存。稍后，我们将探讨如何在这两个内存片段之间切换设置位。
+>正如之前的 Game Boy 内存映射概述中所描述的，“像素块”数据存储在 0x8000 和 0x97FF（0x1800 或 6144 字节的内存）之间的内存片段上。这个区域实际上包含两个独立的内存片段。它让游戏非常快速地在两种不同风格的图形之间切换，而无需刷新整块屏幕。稍后，我们将探讨如何在这两个内存片段之间切换设置位。
 
 For now, we'll be focusing on the first tile set in memory that resides at 0x8000 to 0x8FFF (for a total of 0x1000 or 4096 bytes worth of data). Each tile is encoded in 16 bytes (we'll talk about exactly what this encoding looks like below). So if we 0x1000 bytes worth of memory and each tile is encoded in 16 bytes, then we have 0x1000 / 0x10 or 0x100 (256) different tiles.
->现在，我们将关注内存中的第一片区域，它位于 0x8000 到 0x8FFF 之间（相当于总共 0x1000 大小或者 4096 字节的数据）。每个 tile 都被编码为 16 个字节（我们下面将讨论这种编码是什么样）。因此，如果我们有 0x1000 字节的内存，并且每个 tile 都被编码为 16 字节，那么我们就有 0x1000/0x10 即 0x100（256）个不同的内存块（tile）。
+>现在，我们将关注内存中设置内容的第一片区域，它位于 0x8000 到 0x8FFF 之间（相当于总共 0x1000 大小或者 4096 字节的数据）。每个 tile 都被编码为 16 个字节（我们下面将讨论这种编码是什么样）。因此，如果我们有 0x1000 字节的内存，并且每个 tile 都被编码为 16 字节，那么我们就有 0x1000/0x10 即 0x100（256）个不同的内存块（tile）。
 
 An observant reader might wonder why the first tile set takes up 0x1000 of the 0x1800 or two thirds worth of space alloted for tile memory. The truth is that the second tile set starts at 0x8800 and goes to 0x97FF. The chunk between 0x8800 and 0x8FFF is therefore shared by the two tile sets.
 >细心的读者可能会想，为什么第一个像素块占用了 0x1800 中的 0x1000，或者分配给像素块三分之二的空间。事实上第二个像素块是从 0x8800 到 0x97FF。因此，0x8800 和 0x97FF 之间的区域被两个像素块共享的。
