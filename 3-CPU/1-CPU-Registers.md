@@ -8,9 +8,9 @@
 Game Boy 的 CPU 是专门为 Game Boy 定制的。该芯片非常类似于 [Intel 8080](https://en.wikipedia.org/wiki/Intel_8080)，而 Intel 8080 也非常类似于 [Zilog Z80](https://en.wikipedia.org/wiki/Zilog_Z80)。在 70 年代和 80 年代中，Intel 8080 和 Zilog Z80 常被用于许多不同的计算机设备，而 Game Boy 内部的芯片只是用于 Game Boy。关于 8080 和 Z80 的工作原理大部分也适用于 Game Boy 的芯片。在这里不会详细讨论它们之间的区别，但需要知道，虽然它们与 Game Boy 的芯片很类似，但也很不同。
 
 ## 寄存器
-该 CPU 中包含了 8 个不同的“寄存器”。寄存器负责保存 CPU 在执行各种指令时可以操作的小块数据。Game Boy 的 CPU 是一个 8 位的 CPU，这意味着它的每个寄存器可以容纳 8 位（即 1 字节）。这里讲 8 个不同的寄存器标识为“a”，“b”，“c”，“d”，“e”，“f”，“g”，“h”，“l”。
+该 CPU 中包含了 8 个不同的“寄存器”。寄存器负责保存 CPU 在执行各种指令时可以操作的小块数据。Game Boy 的 CPU 是一个 8 位的 CPU，这意味着它的每个寄存器可以容纳 8 位（即 1 字节）。这里把 8 个不同的寄存器标识为“a”，“b”，“c”，“d”，“e”，“f”，“g”，“h”，“l”。
 
-我们通过指定寄存器的代码开始构建 CPU：
+我们通过指定寄存器的标识开始构造 CPU：
 
 ```rust
 struct Registers {
@@ -69,7 +69,7 @@ impl Registers {
 
 因此，虽然我们可以仍然将“标志寄存器”建模为简单的 8 位数值（毕竟，真实情况也是如此），但对高 4 位（就是半个字节）设定特定的含义并让低 4 位（就是半个字节）保持为 0 值的建模更不容易出错。
 
-因此，我们将创建一个 `FlagsRegister` 结构类型： 
+因此，我们将创建一个 `FlagsRegister` 结构类型：
 
 ```rust
 struct FlagsRegister {

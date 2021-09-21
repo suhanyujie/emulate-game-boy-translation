@@ -3,6 +3,8 @@
 
 >* 原文链接 https://blog.ryanlevick.com/DMG-01/public/book/
 >* 译文出处 https://github.com/suhanyujie/emulate-game-boy-translation
+>* 译者：[suhanyujie](https://github.com/suhanyujie)
+>* ps：水平有限，翻译不当之处，还请指正，谢谢！
 
 # 寄存器数据指令
 >Instructions on Register Data - Instruction Execution and Control Flow 译文

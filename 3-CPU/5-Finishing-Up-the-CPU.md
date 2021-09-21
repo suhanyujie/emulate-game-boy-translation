@@ -5,18 +5,22 @@
 >* 原文链接：https://blog.ryanlevick.com/DMG-01/public/book/
 >* 译文出处：https://github.com/suhanyujie/emulate-game-boy-translation
 >* 译者：[suhanyujie](https://github.com/suhanyujie)
+>* ps：水平有限，翻译不当之处，还请指正，谢谢！
 
 ## [Finishing Up the CPU](#finishing-up-the-cpu)
 
 We've nearly reached the end of building our CPU. There are a few instructions left to implement, many of which we won't touch on here, since they're closely tied with other parts of the Game Boy that we've yet to talk about.
+>我们已经快要完成 CPU 的构建了。还有一些其他指令需要实现，其中很多我们暂时不会涉及，因为那些虽然与 Game Boy 紧密相关，但还不到时候讨论。
 
 ## [Remaining Instructions](#remaining-instructions)
 
 In this chapter, we'll look at two more instructions: `NOP` and `HALT`
+>在本章中，我们会着重研究这两个指令：`NOP` 和 `HALT`
 
 ### [NOP](#nop)
 
 `NOP` is perhaps the simplest of the Game Boy's instructions. It stands for no-operation and it effectively does nothing except advance the program counter by 1.
+>`NOP` 可能是 Game Boy 中最简单的指令。它表示空操作，即它除了将程序计数器累加一次外，没有其他任何影响或作用。
 
 ### HALT
 
