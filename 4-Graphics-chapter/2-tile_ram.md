@@ -182,31 +182,35 @@ impl GPU {
         // 现在，我们要循环 8 次，得到一整行 8 个像素。
         for pixel_index in 0..8 {
             // To determine a pixel's value we must first find the corresponding bit that encodes
-            // that pixels value:
+            // 要确定像素值，必须先找到相应的编码位
+            // 像素值是：
             // 1111_1111
             // 0123 4567
             //
             // As you can see the bit that corresponds to the nth pixel is the bit in the nth
             // position *from the left*. Bits are normally indexed from the right.
+            // 正如你看到的，像素位对应于*从左到右*第 n 个位置。位通常从右开始索引。
             //
-            // To find the first pixel (a.k.a pixel 0) we find the left most bit (a.k.a bit 7). For
-            // the second pixel (a.k.a pixel 1) we first the second most left bit (a.k.a bit 6) and
-            // so on.
+            // 为了找到第 1 个像素（即像素 0），我们从最左边的位（即像素 7）开始计算。对于第二个像素（即像素 1），我们首先找到最左边第 2 个位（像素 6），以此类推。
             //
             // We then create a mask with a 1 at that position and 0s everywhere else.
+            // 我们创建一个 mask，位置是 1，其他位是 0
             //
             // Bitwise ANDing this mask with our bytes will leave that particular bit with its
             // original value and every other bit with a 0.
+            // 把这个 mask 与我们的字节进行按位和计算会保留特定的位和它的原始值，并且其他位都是 0。
             let mask = 1 << (7 - pixel_index);
             let lsb = byte1 & mask;
             let msb = byte2 & mask;
 
             // If the masked values are not 0 the masked bit must be 1. If they are 0, the masked
             // bit must be 0.
+            如果计算的值不为 0，则掩码（mask）位必须为 1。如果要计算的值是 1，则掩码位必须是 0。
             //
             // Finally we can tell which of the four tile values the pixel is. For example, if the least
             // significant byte's bit is 1 and the most significant byte's bit is also 1, then we
             // have tile value `Three`.
+            // 最后，我们可以推断像素块的值是 4 个块中的哪一个。比如，如果最低有效字节的位是 1，最高有效字节的位也是 1，那么就能计算出像素块的值是 `Three`。
             let value = match (lsb != 0, msb != 0) {
                 (true, true) => TilePixelValue::Three,
                 (false, true) => TilePixelValue::Two,
@@ -220,8 +224,6 @@ impl GPU {
     }
 }
 ```
-
-TODO: other tile set TODO: tile map
 
 我们现在有了一个缓存块，这样我们不仅可以直接在 VRAM 中获得信息，而且还可以以更方便的格式获取信息。
 
