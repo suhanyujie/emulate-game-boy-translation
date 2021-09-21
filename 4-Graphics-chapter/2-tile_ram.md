@@ -5,6 +5,7 @@
 >* 原文链接：https://github.com/rylev/DMG-01/blob/master/book/src/graphics/tile_ram.md
 >* 译文出处：https://github.com/suhanyujie/emulate-game-boy-translation
 >* 译者：[suhanyujie](https://github.com/suhanyujie)
+>* ps：水平有限，翻译不当之处，还请指正，谢谢！
 
 在我们将背景图显示到屏幕上之前，我们需要对背景图显示的工作原理以及它在内存中的存储方式进行一些了解。
 
@@ -20,8 +21,7 @@ Game boy 游戏机不能直接控制显示屏上的图像显示。这是因为 G
 
 现在，我们将关注内存中设置内容的第一片区域，它位于 0x8000 到 0x8FFF 之间（相当于总共 0x1000 大小或者 4096 字节的数据）。每个 tile 都被编码为 16 个字节（我们下面将讨论这种编码是什么样）。因此，如果我们有 0x1000 字节的内存，并且每个 tile 都被编码为 16 字节，那么我们就有 0x1000/0x10 即 0x100（256）个不同的块（tile）。
 
-An observant reader might wonder why the first tile set takes up 0x1000 of the 0x1800 or two thirds worth of space alloted for tile memory. The truth is that the second tile set starts at 0x8800 and goes to 0x97FF. The chunk between 0x8800 and 0x8FFF is therefore shared by the two tile sets.
->细心的读者可能会想，为什么第一个像素块占用了 0x1800 中的 0x1000，或者分配给像素块三分之二的空间。事实上第二个像素块是从 0x8800 到 0x97FF。因此，0x8800 和 0x97FF 之间的区域被两个像素块共享的。
+细心的读者可能会想，为什么第一个像素块占用了 0x1800 中的 0x1000，或者分配给像素块三分之二的内存。事实上第二个像素块是从 0x8800 到 0x97FF。因此，0x8800 和 0x97FF 之间的区域被两个像素块共享的。
 
 TODO: 画一张图
 
@@ -32,15 +32,12 @@ TODO: 画一张图
 9000-97FF: Second part of tile set #2
 ```
 
-So how are each of the tiles encoded? First, we need to understand how many different colors a pixel of the Game Boy can display. The Game Boy is capable of displaying 4 different colors: white, light gray, dark gray, and black. The minimal number of bits that we need to encode this information is 2 bits since two bits can encode 4 different numbers: 0b00, 0b01, 0b10, and 0b11.
->每一片像素是如何编码的呢？首先，我们需要了解 Game Boy 的一个像素可以显示多种不同的颜色。Game Boy 可以显示 4 种不同的颜色：白色、浅灰色、深灰色和黑色。因此，编码这些最少需要 2 位，因为 2 位最多可以编码 4 个不同的数值：0b00、0b01、0b10 和 0b11.
+每一个像素块是如何编码的呢？首先，我们需要了解 Game Boy 的一个像素可以显示多种不同的颜色。Game Boy 可以显示 4 种不同的颜色：白色、浅灰色、深灰色和黑色。因此，编码这些至少需要 2 位，因为 2 位最多可以编码 4 个不同的数值：0b00、0b01、0b10 和 0b11.
 
->* Learn More
->* The way the Game Boy hardware displays the 4 different colors is simply by emitting 4 different levels of white light. For "white" for instance the light is fully on, while for black the light is fully off. Light and dark gray are at 33% light and 66% light respectively. In fact, calling these colors white, gray and black isn't really true since the screen of the original Game Boy was green so the colors players see are actually shades of green.
+>* 了解更多
 >* Game Boy 硬件显示 4 种不同颜色的方式是通过发射 4 种不同级别的白光。如，“白色”，灯是完全亮着的，而对于“黑色”，灯是完全关闭的。浅色和深灰色分别是 66% 的亮度和 33% 的亮度。事实上，称这些颜色为白色、灰色和黑色不完全正确，因为最初的 Game Boy 的屏幕是绿色，所以玩家看到的颜色实际上是绿色的阴影。
 
-The bit value to color mapping is as follows:
->对颜色映射的“位值”如下：
+颜色到“位值”的映射如下：
 
 ```
 +------+------------+
@@ -51,20 +48,18 @@ The bit value to color mapping is as follows:
 +------+------------+
 ```
 
-So each pixel of our 8x8 pixel (i.e., 64 pixels in total) tile will take 2 bits to represent. That means we'll need 64 * 2 or 128 bits total to represent all the pixels. In terms of number of bytes that's 128 / 8 or 16 bytes total as we've said above.
->所以，我们的 8x8 像素（即总共 64 像素）贴图的每个像素将需要占用 2 位。这意味着我们需要 64*2 即 128 位来表示所有像素。换算到字节数是 128/8 即 16 字节，和前面提到的一致。
+所以，我们的 8x8 像素块（即总共 64 像素）贴图的每个像素将需要占用 2 位。这意味着我们需要 64*2 即 128 位来表示所有像素。换算到字节数是 128/8 即 16 字节，和前面提到的是一致的。
 
-So this shouldn't be too hard to encode right? Just start from the top left most pixel and every two bits we encode that pixels value right? Unfortunately not. The actual encoding scheme is a little bit more complicated.
->这应该不难编码，对吧？从最左上角的像素开始，每隔两位我们对像素值进行编码？很遗憾，不是这样的，实际的编码方式稍微有点复杂。
+这应该不难编码，对吧？从最左上角的像素开始，每两位进行像素值的编码？很遗憾，不是这样的，实际的编码方式稍微有点复杂。
 
 Each row of a tile is 2 bytes worth of data (8 pixels with 2 bits per pixel equals 16 bits or 2 bytes). Instead of each pixels value coming one after the other, each pixel is split between the two bytes. So the first pixel is encoded with the left most (i.e., most significant bit a.k.a bit 7) of each byte.
->每个内存块是 2 字节大小（8 个像素，单个占用 2 位，一共是 16 位/ 2 字节）。每个像素值不是一个接一个地出现，而是由两个分隔开的字节组成。因此，第一个像素是用每个字节地最左边（最大的有效位值是 7）表示的。
+>像素块的每一行是 2 字节大小（8 个像素，单个像素点占用 2 位，一共是 16 位/ 2 字节）。每个像素值不是一个接一个地出现，而是由两个分隔开的字节组成。因此，第一个像素是用每个字节的最左边（最大的有效位值是 7）表示的。
 
 For example, let's imagine that the first two bytes of our tile set memory were 0xB5 (0b10110101) and 0x65 (0b01100101). These two bytes together will encode the data for the first tile. Byte 1 contains the value of the upper (a.k.a most significant) bit and byte 2 contains the value of the lower (least significant) bit.
->例如，我们假设内存块的第一个两字节是 0xB5 (0b10110101) 和 0x65 (0b01100101)。这两个字节一起给第一个图编码数据。字节 1 包含最高位的值，字节 2 包含最低位的值。
+>例如，我们假设内存块的首个两字节是 0xB5 (0b10110101) 和 0x65 (0b01100101)。这两个字节一起给第一个图编码数据。字节 1 包含最高位的值，字节 2 包含最低位的值。
 
 Let's take a look at how this looks. In the following diagram that colors are represented by 1 letter "B" for black, "D" for dark-gray, "L" for light-gray and "W" for white.
->我们看看具体是怎样的。在下面的图表中，颜色用一个字母表示，B 代表黑色，D 代表 深灰色，L 代表浅灰色，W 代表白色。
+>我们看看具体是怎样的。在下面的图表中，颜色用一个字母表示，B 代表黑色，D 代表深灰色，L 代表浅灰色，W 代表白色。
 
 ```
              Bit 位置
@@ -78,14 +73,12 @@ s            D L W D B W B W
                  颜色
 ```
 
-Since reading the tile data happens much more often than writing it, we can store the tile data internally in a more friendly way.
->因为读取块数据比写入要频繁很多，所以我们以一种更友好的方式在内部存储数据块。
+因为读取块数据比写入要频繁很多，所以我们以一种更友好的方式在内部存储数据块。
 
-Let's write some code to see what we need. First, we're going to create a new struct that will be responsible for all the graphics needs of the Game Boy. This loosely mimics the set up of actual hardware where the CPU knows nothing about graphics and all. There's no one chip responsible for graphics instead there is dedicated video RAM and the screen hardware. It would over complicate things if we tried to too closely mimic this set up. Instead we'll create the GPU or "Graphic Processing Unit" to model all of our video needs.
->我们先写一部分代码看看需要什么。首先，创建一个结构体，它负责 Game Boy 的所有图形需求。它大致模仿了实际硬件的设置，其中 CPU 不会管理图形和其他处理。没有一个芯片负责图形，而是有专用的视频 RAM 和屏幕硬件。如果我们试图充分地模仿这种硬件，就会增加复杂度。相反，我们会创建 GPU 或“图形处理单元”来模拟所有的图像需求。
+我们先写一部分代码看看需要什么。首先，创建一个结构体，它负责 Game Boy 的所有图形需求。它大致模仿了实际硬件的设置，其中 CPU 不会管理图形和其他处理。没有一个芯片负责图形，而是有专用的视频 RAM 和屏幕硬件。如果我们要完全地模仿这种硬件，会增加复杂度。相反，我们只需创建 GPU 或“图形处理单元”来模拟场景所需的图像需求。
 
 For now, our GPU will hold on to video RAM and our tile set data. Our video ram is just a long array which holds on to raw byte values. The tile set will also be an array of tiles. A tile is simply an array of 8 rows where a row is an array of 8 TileValues.
->现在，我们的 GPU 将保存视频和图像数据。我们的视频内存只是一个保存原始字节值的长数组。图像集合也是一个数组。平铺一下就是一个 8 行的数组，其中每一行是包含 8 个值的数组。
+>现在，我们的 GPU 将保存视频和图像数据。我们的视频内存只是一个保存原始字节值的长数组。图像集合也是一个二维数组。平铺一下就是一个 8 行的数组，其中每一行包含 8 个值的数组。
 
 ```rust
 const VRAM_BEGIN: usize = 0x8000;
@@ -111,8 +104,7 @@ struct GPU{
 }
 ```
 
-Let's go back to our memory bus to redirect any of writes in memory to our video ram to go to the GPU:
->我们回到内存总线，将内存中的所有数据重定向到视频内存中，以便于 GPU 进行处理：
+我们回到内存总线，将内存中的所有数据重定向到视频内存中，以便于 GPU 进行处理：
 
 ```rust
 # const VRAM_BEGIN: usize = 0x8000;
@@ -145,11 +137,9 @@ impl MemoryBus {
 }
 ```
 
-Notice how from the MemoryBus we don't directly access the vram but instead go through two methods read_vram and write_vram. This is so we can easily cache our tile set in the tile_set field of our CPU. Let's take a look at how these are implemented.
->注意，在内存总线（MemoryBus）中，我们不直接访问 vram（视频内存），而是通过两个方法 read_vram 和 write_vram 读写。这样我们就可以轻松地将内存片设置缓存到 CPU 的 tile_set 字段中。我们看看具体实现：
+注意，在内存总线（MemoryBus）中，我们不直接访问 vram（视频内存），而是通过两个方法 read_vram 和 write_vram 读写。这样我们就可以轻松地将项像素块对应的值设置缓存到 CPU 的 tile_set 字段中。我们看看具体实现：
 
-read_vram is very simple as it actually just reads from the vram array:
->read_vram 非常简单，因为它实际上只是从 vram 数组中读数据：
+read_vram 非常简单，因为它实际上只是从 vram 数组中读数据：
 
 ```rust
 # struct GPU { vram: Vec<u8> }
@@ -160,8 +150,7 @@ impl GPU {
 }
 ```
 
-However, write_vram is much more involved. Let's take a look at the code and go line by line to see what's happening:
->然而，write_vram 要复杂得多。我们看看代码，逐行分析一下发生了什么：
+然而，write_vram 要复杂得多。我们看看代码，逐行分析一下发生了什么：
 
 ```rust
 # #[derive(Copy,Clone)]
@@ -170,8 +159,6 @@ However, write_vram is much more involved. Let's take a look at the code and go 
 impl GPU {
     fn write_vram(&mut self, index: usize, value: u8) {
         self.vram[index] = value;
-        // If our index is greater than 0x1800, we're not writing to the tile set storage
-        // so we can just return.
         // 如果索引大于 0x1800，我们将不写入内存块，直接进行返回。
         if index >= 0x1800 { return }
 
@@ -240,8 +227,6 @@ impl GPU {
 
 TODO: other tile set TODO: tile map
 
-We now have a cache of our tile ram so that not only do we have the information directly in VRAM but we also have it in a more accessible format.
->我们现在有了一个缓存块，这样我们不仅可以直接在 VRAM 中获得信息，而且还可以以更方便的格式获取信息。
+我们现在有了一个缓存块，这样我们不仅可以直接在 VRAM 中获得信息，而且还可以以更方便的格式获取信息。
 
-Next we'll get into the details of rendering.
->接下来我们将讨论渲染的细节部分。
+接下来我们将讨论渲染的细节部分。
