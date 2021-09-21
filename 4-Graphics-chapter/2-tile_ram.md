@@ -52,14 +52,11 @@ TODO: 画一张图
 
 这应该不难编码，对吧？从最左上角的像素开始，每两位进行像素值的编码？很遗憾，不是这样的，实际的编码方式稍微有点复杂。
 
-Each row of a tile is 2 bytes worth of data (8 pixels with 2 bits per pixel equals 16 bits or 2 bytes). Instead of each pixels value coming one after the other, each pixel is split between the two bytes. So the first pixel is encoded with the left most (i.e., most significant bit a.k.a bit 7) of each byte.
->像素块的每一行是 2 字节大小（8 个像素，单个像素点占用 2 位，一共是 16 位/ 2 字节）。每个像素值不是一个接一个地出现，而是由两个分隔开的字节组成。因此，第一个像素是用每个字节的最左边（最大的有效位值是 7）表示的。
+像素块的每一行是 2 字节大小（8 个像素，单个像素点占用 2 位，一共是 16 位/ 2 字节）。每个像素值不是一个接一个地出现，而是由两个分隔开的字节组成。因此，第一个像素是用每个字节的最左边（最大的有效位值是 7）表示的。
 
-For example, let's imagine that the first two bytes of our tile set memory were 0xB5 (0b10110101) and 0x65 (0b01100101). These two bytes together will encode the data for the first tile. Byte 1 contains the value of the upper (a.k.a most significant) bit and byte 2 contains the value of the lower (least significant) bit.
->例如，我们假设内存块的首个两字节是 0xB5 (0b10110101) 和 0x65 (0b01100101)。这两个字节一起给第一个图编码数据。字节 1 包含最高位的值，字节 2 包含最低位的值。
+例如，我们假设内存块的首个两字节是 0xB5 (0b10110101) 和 0x65 (0b01100101)。这两个字节一起给第一个图编码数据。字节 1 包含最高位的值，字节 2 包含最低位的值。
 
-Let's take a look at how this looks. In the following diagram that colors are represented by 1 letter "B" for black, "D" for dark-gray, "L" for light-gray and "W" for white.
->我们看看具体是怎样的。在下面的图表中，颜色用一个字母表示，B 代表黑色，D 代表深灰色，L 代表浅灰色，W 代表白色。
+我们看看具体是怎样的。在下面的图表中，颜色用一个字母表示，B 代表黑色，D 代表深灰色，L 代表浅灰色，W 代表白色。
 
 ```
              Bit 位置
@@ -77,8 +74,7 @@ s            D L W D B W B W
 
 我们先写一部分代码看看需要什么。首先，创建一个结构体，它负责 Game Boy 的所有图形需求。它大致模仿了实际硬件的设置，其中 CPU 不会管理图形和其他处理。没有一个芯片负责图形，而是有专用的视频 RAM 和屏幕硬件。如果我们要完全地模仿这种硬件，会增加复杂度。相反，我们只需创建 GPU 或“图形处理单元”来模拟场景所需的图像需求。
 
-For now, our GPU will hold on to video RAM and our tile set data. Our video ram is just a long array which holds on to raw byte values. The tile set will also be an array of tiles. A tile is simply an array of 8 rows where a row is an array of 8 TileValues.
->现在，我们的 GPU 将保存视频和图像数据。我们的视频内存只是一个保存原始字节值的长数组。图像集合也是一个二维数组。平铺一下就是一个 8 行的数组，其中每一行包含 8 个值的数组。
+现在，我们的 GPU 把数据保存到视频 RAM 和 tile set 中。视频 RAM 只是一个保存原始字节值的长数组。tile set 也是一个二维数组。平铺一下就是一个 8 行的数组，其中每一行包含 8 个值的数组。
 
 ```rust
 const VRAM_BEGIN: usize = 0x8000;
