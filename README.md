@@ -13,9 +13,10 @@
     - [x] 3.3 [指令执行器和控制流](3-CPU/3-executing_instructions.md)
     - [x] 3.4 [内存读写指令](3-CPU/4-Instructions-for-Reading-and-Writting-to-Memory.md)
     - [x] 3.4 [CPU 完成](3-CPU/5-Finishing-Up-the-CPU.md)
-- [ ] 4 [图形](4-graphics)
+- [x] 4 [图形](./4-Graphics-chapter)
     - [x] 4.1 [概述](4-Graphics-chapter/1-introduction.md)
-    - [ ] 4.2 [图形内存片](4-Graphics-chapter/2-tile_ram.md)
+    - [x] 4.2 [图形内存片](4-Graphics-chapter/2-tile_ram.md)
+- [ ] 5 [内存映射](./5-Memory-Map/meory-map.md)
 
 ## 参与翻译
 * 一个人时间和精力有限，如果你能参与一起翻译，那就再好不过。请提 issue 告知。
