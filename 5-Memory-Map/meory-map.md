@@ -1,5 +1,13 @@
+>* Memory Map 译文
+>* 原文链接：https://rylev.github.io/DMG-01/public/book/memory_map.html
+>* 译文出处：https://github.com/suhanyujie/emulate-game-boy-translation
+>* 译者：[suhanyujie](https://github.com/suhanyujie)
+>* ps：水平有限，翻译不当之处，还请指正，谢谢！
+
 # Memory Map
+
 Up until now we've been treating the Game Boy's memory as one long array with 0xFFFF entries in it. While this was a helpful simplification for our work on the CPU (which doesn't know anything more about memory than that), in reality things are bit more complex. Sections of memory are actually used for very specific purposes. In fact there are parts of "memory" that are not actually backed by a RAM chip but instead are directly tied to things like the Game Boy screen or the Game Boy's audio device. Below we'll be "mapping" out memory and talking at a high level about what the different sections of the Game Boy's memory map do. We'll start at the very beginning of memory with address 0x0000 and work our way all the up to the top. This chapter should serve as the jumping off point for the rest of the book, so if you don't understand exactly how something works don't worry, we'll be going in much more detail later on.
+>目前为止，我们可以把 Game Boy 的内存视为一个入口为 0xFFFF 的长数组，虽然这样简化的抽象有利于我们使用 CPU （CPU 对内存一无所知），但实际上，要复杂很多。内存的作用是特定的。实际上这些“内存”并不是有 RAM 芯片支持，而是直接与 Game Boy 屏幕和音频设备相关联。下面，我们对内存映射及其高级抽象的不同部分进行讨论。我们会从内存地址的最开始的部分进行，一直到最顶部。这一章，我们应该会从本书的其他部分开始，如果你不太明白它们的原理，不用担心，我们会在后续进行更详细的讨论。
 
 ## 0x0000 - 0x00FF: Boot ROM
 

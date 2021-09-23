@@ -17,6 +17,13 @@
     - [x] 4.1 [概述](4-Graphics-chapter/1-introduction.md)
     - [x] 4.2 [图形内存片](4-Graphics-chapter/2-tile_ram.md)
 - [ ] 5 [内存映射](./5-Memory-Map/meory-map.md)
+- [ ] 6 附录
+  - [ ] 6.1 数字
+  - [ ] 6.2 数字符号
+  - [ ] 6.3 位操作
+  - [ ] 6.4 资源
+  - [ ] 6.5 使用指南
+  - [ ] 6.6 Cartridge Header
 
 ## 参与翻译
 * 一个人时间和精力有限，如果你能参与一起翻译，那就再好不过。请提 issue 告知。
