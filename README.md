@@ -31,3 +31,4 @@
 ## 参考资料
 * 原文 https://github.com/rylev/DMG-01/tree/master/book
 * 工具 html 转 markdown http://domchristie.github.io/turndown/
+* nes emulator https://bugzmanov.github.io/nes_ebook/chapter_1.html
