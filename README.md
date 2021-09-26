@@ -31,4 +31,7 @@
 ## 参考资料
 * 原文 https://github.com/rylev/DMG-01/tree/master/book
 * 工具 html 转 markdown http://domchristie.github.io/turndown/
-* nes emulator https://bugzmanov.github.io/nes_ebook/chapter_1.html
+* 其他模拟器资料
+  * nes emulator https://bugzmanov.github.io/nes_ebook/chapter_1.html
+  * chip-8 emulator https://github.com/mattmikolay/chip-8/wiki/Mastering-CHIP%E2%80%908
+  * js 实现的 GameBoy https://imrannazar.com/GameBoy-Emulation-in-JavaScript
