@@ -12,6 +12,7 @@ Up until now we've been treating the Game Boy's memory as one long array with 0x
 ## 0x0000 - 0x00FF: Boot ROM
 
 When the Game Boy first boot's the very bottom 256 bytes of memory is occuppied with the boot ROM. We've talked a little bit about the boot ROM before - how it's responsible for bootstrapping the Game Boy to be able to run a game as well as for playing the [iconic splash screen](https://www.youtube.com/watch?v=ClJWTR_lCL4) on boot. Later in the book, we'll be examining the boot ROM very closely.
+>当  Game Boy 首次启动时，最底部的 256 字节的内存是用于引导 boot 的 ROM。我们之前已经提到过关于启动 ROM - 它是如何负责引导 Game Boy，并使其运行一个游戏以及展示[标志性的屏闪画面](https://www.youtube.com/watch?v=ClJWTR_lCL4)。在本书的后面，我们会仔细检查引导 ROM。
 
 ## 0x0000 - 0x3FFF: Game ROM Bank 0
 

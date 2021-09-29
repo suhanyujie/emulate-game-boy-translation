@@ -35,3 +35,4 @@
   * nes emulator https://bugzmanov.github.io/nes_ebook/chapter_1.html
   * chip-8 emulator https://github.com/mattmikolay/chip-8/wiki/Mastering-CHIP%E2%80%908
   * js 实现的 GameBoy https://imrannazar.com/GameBoy-Emulation-in-JavaScript
+  * https://github.com/mvdnes/rboy
