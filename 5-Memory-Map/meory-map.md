@@ -20,6 +20,8 @@ Once the Game Boy is done booting, it unmaps the boot ROM from memory so it is n
 >一旦 Game Boy 完成了引导，就会去除 ROM 对应的内存映射，因此 ROM 不再可用。从这一点开始，从启动 ROM 开始，一直到地址 0x3FFF 的区域将会被游戏卡中的游戏代码所占用。在这段内存中，有两个值的区域需要注意：
 
 * 0x0000 - 0x00FF - the area once occupied by the Boot ROM now holds memory called the "Interrupt Table". We'll be talking at length in the future about interrupt's, but for now the best way to think about them is just like "events" in higher level programming. When specific things happen the hardware automatically looks inside the interrupt table at specific locations for how to handle those events.
+>* 0x0000 - 0x00FF —— 曾被引导 ROM 占用的这块区域，现在正保存着“中断表”。我们会在后面讨论中断，但现在，最好把它们看作是高级编程中的“事件”。当特定的事件发生时，硬件会自动在中断表中查找如何处理该事件。
+
 * 0x0100 - 0x014F - This area is known as the cartridge header area. It contains data about the cartridge that was loaded into Game Boy including its name, the size of cartridge ROM and even the nintendo logo. We'll talk about more about the contents of the cartridge when we talk about the boot ROM since it directly references this header area. If you want to really dive into specifics checkout [the cartridge header guide](https://rylev.github.io/DMG-01/public/book/appendix/cartridge_header.html)
 
 After these special areas is plain game code. The reason this area is refered to as Bank 0 is explained in the next section.
