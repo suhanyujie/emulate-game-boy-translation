@@ -23,11 +23,14 @@ Once the Game Boy is done booting, it unmaps the boot ROM from memory so it is n
 >* 0x0000 - 0x00FF —— 曾被引导 ROM 占用的这块区域，现在正保存着“中断表”。我们会在后面讨论中断，但现在，最好把它们看作是高级编程中的“事件”。当特定的事件发生时，硬件会自动在中断表中查找如何处理该事件。
 
 * 0x0100 - 0x014F - This area is known as the cartridge header area. It contains data about the cartridge that was loaded into Game Boy including its name, the size of cartridge ROM and even the nintendo logo. We'll talk about more about the contents of the cartridge when we talk about the boot ROM since it directly references this header area. If you want to really dive into specifics checkout [the cartridge header guide](https://rylev.github.io/DMG-01/public/book/appendix/cartridge_header.html)
+>* 0x0100 - 0x014F —— 这个区域是常见的数据盒头部区域。它存储盒装游戏的数据，包括名称、盒装游戏的 ROM，甚至任天堂的 logo。当我们讨论引导 ROM 时，我们先具体了解一下数据盒内容，因为它直接引用了数据盒头部区域。如果你想深入了解细节，可以查看[数据盒头部指南](https://rylev.github.io/DMG-01/public/book/appendix/cartridge_header.html)
 
 After these special areas is plain game code. The reason this area is refered to as Bank 0 is explained in the next section.
+>在介绍了这些特殊的区域后，接下来是简单的游戏代码。这个区域被称为 区块 0（Bank 0）的原因将在下一节解释。
 
 ## 0x4000 - 0x7FFF: Game ROM Bank N
 Game ROMs can be quite large - much larger than what can fit into the memory area available. To handle this, the Game Boy allows for ROM "bank switching". A ROM bank is simply a chunk of the cartirdge ROM. The game can switch in these chunks at run time into the area between 0x4000 - 0x7FFF. The first bank, bank 0, is always the same memory and cannot be switched out. Only the area of memory between 0x4000 and 0x7FFF is capable of being switched out. Later in the book we'll go into specifics of how this works.
+>游戏 ROM 可以很大 —— 比可用内存所能容纳的还要大的多。为了解决这个问题，Game Boy 允许 ROM 进行“bank 切换”（bank switching）。ROM 是一个简单的光盘，游戏可以在运行时切换 0x4000 - 0x7FFF 之间的区域。第一个 bank，bank 0，如果它和内存大小相同，就无法切换。只有 0x4000 和 0x7FFF 之间的内存区域能够正常切换。在本书的后面，我们会详细讨论它如何工作。
 
 ## 0x8000 - 0x97FF: Tile RAM
 This area of memory contains data about the graphics that can be displayed to the screen. The Game Boy uses a tiling system for grapics meaning that a game doesn't control the specific pixels that get drawn to the screen, at least not directly. Instead, the game creates a set of tiles which are square chunks of pixels. It can then place these tiles on the screen. So instead of saying "draw pixel 438 light green", it first says "create a tile with these pixels values" and then later "place that tile I made earlier in positon 5". The placement of tiles at certain positions happens in the next chunk of memory...
