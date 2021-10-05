@@ -34,18 +34,23 @@ Game ROMs can be quite large - much larger than what can fit into the memory are
 
 ## 0x8000 - 0x97FF: Tile RAM
 This area of memory contains data about the graphics that can be displayed to the screen. The Game Boy uses a tiling system for grapics meaning that a game doesn't control the specific pixels that get drawn to the screen, at least not directly. Instead, the game creates a set of tiles which are square chunks of pixels. It can then place these tiles on the screen. So instead of saying "draw pixel 438 light green", it first says "create a tile with these pixels values" and then later "place that tile I made earlier in positon 5". The placement of tiles at certain positions happens in the next chunk of memory...
+>这块带有图像数据的内存区域可以显示到屏幕上。Game Boy 使用了平铺像素系统，这意味着游戏不能控制绘制到屏幕上的特定像素块，至少不能直接控制。相反，游戏创造了一组像素组成的方块。游戏机会将像素块绘制到屏幕上。所以说它不能“绘制 438 像素的浅绿色”，只能说它会通过像素值来创建一些像素方块，然后再将其放在 5 号位置。然后在内存的下一个特定的内存区域继续摆放。。。
 
 ## 0x9800 - 0x9FFF: Background Map
 As we described above, the Game Boy uses a tiling system for graphics. In memory 0x8000 to 0x97FF the game creates different tiles. These tiles however don't show up on screen. That happens in this section of memory where the game can map tiles to sections of the screen.
+>正如之前所描述的，Game Boy 使用了图像块平铺系统。在内存 0x8000 到 0x97FF 的位置，游戏会创建不通的图像块。然而，这些方块并不会显示到屏幕上。而是发生在内存中，然后游戏机会将它们映射到屏幕的各个地方。
 
 ## 0xA000 - 0xBFFF: Cartridge RAM
 Cartridges (being physical devices) sometimes had extra RAM on them. This gave games even more memory to work with. If the cartridge had this extra RAM the Game Boy automatically mapped the RAM into this area of memory.
+>墨盒（Cartridges）（一个物理设备）有时会有额外的 RAM。这样会给游戏提供更多的内存。如果 cartridge 有额外的RAM，Game Boy 会将 RAM 映射到内存区域。
 
 ## 0xC000 - 0xDFFF: Working RAM
 This is the RAM that the Game Boy allows a game to use. Our idea of RAM really just being a plain old array where the game could read and write bytes to really only applies to this section of memory.
+>这是 Game Boy 允许游戏使用的 RAM。我们可以将这部分 RAM 视为一个普通的数组，游戏可以在其中读写字节，只有这部分是适用的。
 
 ## 0xE000 - 0xFDFF: Echo RAM
 This section of memory directly mirrors the working RAM section - meaning if you write into the first address of working RAM (0xC000), the same value will appear in the first spot of echo RAM (0xE000). Nintendo actively discouraged developers from using this area of memory and as such we can just pretend it doesn't exist.
+>这部分内存直接映射工作 RAM 区域 —— 这意味着如果你写入数据到第一个工作 RAM 地址（0xC000），相同的值将会出现在 Echo RAM 的第一个位置（0xE000）。任天堂不鼓励开发者使用这一内存区域，所以我们先忽略它。
 
 ## 0xFE00 - 0xFE9F: OAM (Object Atribute Memory)
 This area of memory contains the description of graphical sprites. The tiles we talked about above were used for backgrounds and levels but not for characters, enemies or objects the user interacted with. These entities, known as sprites, have extra capabilties. The description for how they should look lives here.
