@@ -54,17 +54,23 @@ This section of memory directly mirrors the working RAM section - meaning if you
 
 ## 0xFE00 - 0xFE9F: OAM (Object Atribute Memory)
 This area of memory contains the description of graphical sprites. The tiles we talked about above were used for backgrounds and levels but not for characters, enemies or objects the user interacted with. These entities, known as sprites, have extra capabilties. The description for how they should look lives here.
+>这个内存区域包含了图像精灵的描述。我们上面提到的块主要用于背景和关卡，而非角色、敌人或用户互动的对象。这些实体叫做“精灵”，有额外的作用。描述它们的属性数据就存储在这里。
 
 ## 0xFEA0 - 0xFEFF: Unused
 This area is completely unmapped: reading from it just returns 0s and writing to it does nothing.
+>这个区域完全没有映射：从中读取只返回 0，而向其中写入则什么也不做。
 
 ## 0xFF00 - 0xFF7F: I/O Registers
 This is one of the most dense areas of memory. Practically every byte has a special meaning. It's used by both the screen and the sound system to determine different settings. We'll be talking a lot about this in the future.
+>这是内存密集的区域之一。实际上每个字节都有特殊的含义。屏幕和声音系统都使用它来确定对应的设置。后面会经常讨论这个。
 
 ## 0xFF80 - 0xFFFE: High RAM Area
 This area is also just normal RAM but is used a lot because some of the `LD` instructions we've already seen can easily target this area in memory. This area is also sometimes used for the stack, but the top of working RAM is also used for this purpose.
+>这个区域只是普通的 RAM，但却经常被使用，因为我们之前已经看到一些 `LD` 指令可以很容易地命中这部分区域。这个区域有时也用于栈，工作 RAM 的顶部同理也是用于这个目的。
 
 ## 0xFFFF: Interrupt Enabled Register
 The very last byte of memory has special meaning used for handling interrupt events. We'll be looking at this closely later in the book.
+>内存的最后一个字节有特殊的含义，用于处理中断事件。我们将在书的后面详细讨论。
 
 Now that we have an idea of what all the areas of memory are used for we can start diving more in detail. The first area we'll be looking at is at tile RAM and the background map along with a few of the I/O registers that will help us finally get some graphics on a screen!
+>既然我们已经知道了所有内存区域的用途，我们就可以开始更详细的研究了。我们将看到的第一个 RAM 区域和背景地图以及一些 I/O 寄存器，这将有助于我们最后在屏幕上显示图形！
