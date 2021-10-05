@@ -16,7 +16,7 @@
 - [x] 4 [图形](./4-Graphics-chapter)
     - [x] 4.1 [概述](4-Graphics-chapter/1-introduction.md)
     - [x] 4.2 [图形内存片](4-Graphics-chapter/2-tile_ram.md)
-- [ ] 5 [内存映射](./5-Memory-Map/meory-map.md)
+- [x] 5 [内存映射](./5-Memory-Map/meory-map.md)
 - [ ] 6 附录
   - [ ] 6.1 数字
   - [ ] 6.2 数字符号
