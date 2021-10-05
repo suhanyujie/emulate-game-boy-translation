@@ -54,8 +54,7 @@ Cartridges (being physical devices) sometimes had extra RAM on them. This gave g
 这是内存密集的区域之一。实际上每个字节都有特殊的含义。屏幕和声音系统都使用它来确定对应的设置。后面会经常讨论这个。
 
 ## 0xFF80 - 0xFFFE: 高位内存区域
-This area is also just normal RAM but is used a lot because some of the `LD` instructions we've already seen can easily target this area in memory. This area is also sometimes used for the stack, but the top of working RAM is also used for this purpose.
->这个区域只是普通的 RAM，但却经常被使用，因为我们之前已经看到一些 `LD` 指令可以很容易地命中这个区域。这个区域有时也用于栈的使用，“工作 RAM”的顶部同理也是用于这个目的。
+这个区域只是普通的 RAM，但却经常被使用，因为我们之前已经看到一些 `LD` 指令可以很容易地命中这个区域。这个区域有时也用于栈的使用，“工作 RAM”的顶部也是用于这个目的。
 
 ## 0xFFFF: 启用的中断寄存器
 内存的最后一个字节有特殊的含义，用于处理中断事件。我们将在书的后面详细讨论。
