@@ -1,4 +1,3 @@
-
 >* Instructions on Register Data 译文
 >* 原文链接 https://blog.ryanlevick.com/DMG-01/public/book/
 >* 译文出处 https://github.com/suhanyujie/emulate-game-boy-translation

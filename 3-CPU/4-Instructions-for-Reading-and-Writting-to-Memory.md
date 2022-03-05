@@ -1,13 +1,11 @@
-# Instructions for Reading and Writting to Memory
-* 读写内存的指令
-
+>* 读写内存的指令（译文：Instructions for Reading and Writting to Memory）
 >* 原文链接：https://blog.ryanlevick.com/DMG-01/public/book/
 >* 译文出处：https://github.com/suhanyujie/emulate-game-boy-translation
 >* 译者：[suhanyujie](https://github.com/suhanyujie)
+>* tags: Rust，cpu emulator
 >* ps：水平有限，翻译不当之处，还请指正，谢谢！
 
 # 寄存器数据指令
->Instructions for Reading and Writting to Memory 译文
 
 现在我们已经了解指令是如何执行的，以及从内存中获取要读取的指令的基本知识，接下来我们要研究从内存的不同地方读写指令。
 
@@ -64,25 +62,18 @@ impl CPU {
 }
 ```
 
-For loads with a register as a source, we simply read the register's value. If the source is a `D8` (meaning "direct 8 bit value"), the value is stored directly after the instruction, so we can simply call `read_next_byte` which reads the byte directly after the byte the program counter is currently pointing to. Lastly, if the source is `HLI` we use the value inside of the `HL` register as an address from which we read an 8 bit value from memory.
-当把寄存器作为源时，加载时，我们只需读取寄存器的值。而如果源是 `D8`（意思是“直接 8 位值”），那么该值在调用指令后将直接存储起来，因此我们可以简单地调用 `read_next_byte`，它直接读取位于程序计数器当前所指向位置后的字节。最后，如果源是 `HLI`，我们使用 `HL` 寄存器作为地址，从其中的内存中读取 8 位数据值。
+当把寄存器作为源加载时，我们只需读取寄存器的值。而如果源是 `D8`（意味着“直接读取 8 个位的值”），那么该值在调用指令后将直接存储起来，因此我们可以简单地调用 `read_next_byte`，它直接读取位于程序计数器当前所指向位置的后一个字节。最后，如果源是 `HLI`，我们使用 `HL` 寄存器内的值作为地址，从内存中读取 8 位值。
 
-The target is merely the reverse of the source (except that we can't have `D8` as a target). If the target is a register, we write the source value into that register, and if the target is `HLI` we write to the address that is stored inside of the `HL` register.
-目标仅仅是源的反向（除非我们不能将 `D8` 作为目标）。如果目标是一个寄存器，我们将来源中的值写入该寄存器，如果目标是 `HLI`，我们将写到存储在 `HL` 寄存器内的地址中。
+目标仅仅是源的反向（除非我们不能将 `D8` 作为目标）。如果目标是一个寄存器，我们将源值写入该寄存器，如果目标是 `HLI`，我们将写入存储在 `HL` 寄存器内的地址。
 
 使用 16 位寄存器 `BC`、`DE` 和 `HL` 来存储地址是非常常见的。
 
 我们看看其他类型的加载：
 
-* `Word`: just like the `Byte` type except with 16-bit values
 * `Word`: 就像 `Byte` 类型一样，只是有 16 位的值
-* `AFromIndirect`: load the A register with the contents from a value from a memory location whose address is stored in some location
-* `AFromIndirect`: 从内存位置（地址存储在某个位置）加载包含值的内容的寄存器
-* `IndirectFromA`: load a memory location whose address is stored in some location with the contents of the A register
+* `AFromIndirect`: 把 A 寄存器的值从内存的某个位置的地址中加载出来
 * `IndirectFromA`: 加载一个内存位置，其地址与寄存器的内容一起存储在某个位置
-* `AFromByteAddress`: Just like `AFromIndirect` except the memory address is some address in the very last byte of memory.
 * `AFromByteAddress`: 就像 `AFromIndirect`，只不过内存地址是内存的最后一个字节的某个地址
-* `ByteAddressFromA`: Just like `IndirectFromA` except the memory address is some address in the very last byte of memory.
 * `ByteAddressFromA`: 类似于 `IndirectFromA`，只不过内存地址是内存的最后一个字节的某个地址。
 
 有关这些说明的更详细内容，可以参考[说明指南](https://blog.ryanlevick.com/DMG-01/public/book/appendix/instruction_guide/index.html)。
@@ -92,10 +83,9 @@ The target is merely the reverse of the source (except that we can't have `D8` a
 ## 栈
 在查看 Game Boy 中被称为栈的内存区域之前，我们要更好的理解堆栈是什么。简单来讲，堆栈是一个简单的数据结构，你可以向其中添加值（例如将值”push”进去），然后把这些值取出（例如将值“pop”出来）。记住堆栈的关键点是出栈和入栈的顺序是相反的，例如，如果降三个项目“A”，“B”，“C”按顺序送入栈中，取出时的顺序则是“C”，“B”，“A”。
 
-The Game Boy CPU has built in support for a stack like data structure in memory. This stack lives somewhere in memory (we'll talk about how it's location in memory is set in just a minute), and it holds on to 16 bit values. How is it built?
-Game Boy 的 CPU 已经对内存中栈数据结构建立了支持。该堆栈在内存中的某个位置中（我们将讨论在一分钟内设置它的位置），并且它的值是 16 位的。那么是如何建立支持的呢？
+Game Boy 的 CPU 已经支持内存中栈数据结构。该堆栈在内存中的某个位置中（我们只需一分钟就能清楚它在内存中设置的值），并且它的值是 16 位的。那么是如何建立支持的呢？
 
-首先 CPU 上有一个额外的 16 位寄存器，它指向栈的顶部。这个寄存器叫做 `SP` 或者堆栈指针，因为它指向堆栈顶部位置。我们先将这个寄存器加到 CPU 中：
+首先 CPU 上有一个额外的 16 位寄存器，它指向栈的顶部。这个寄存器叫做 `SP` 或者栈指针，因为它指向栈顶部位置。我们先将这个寄存器加到 CPU 中：
 
 ```rust
 struct CPU {
@@ -110,8 +100,7 @@ struct CPU {
 
 Game Boy 的 CPU 拥有这两个指令的功能。`PUSH` 会把 16 位寄存器的内容写入栈中，`POP` 会将数据从栈顶写入 16 位寄存器中。
 
-Here's what's actually happening when a `PUSH` is performed:
-下面是当你 `PUSH` 数据时所发生的的：
+下面是 `PUSH` 数据的过程：
 
 * 栈指针减 1。
 * 将 16 位值中高位有效字节写到当前栈指针指向的内存中。
